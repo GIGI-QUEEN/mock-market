@@ -19,6 +19,7 @@ class FirebaseService {
         "balance": 1000000,
       });
     } catch (e) {
+      log('Error in addUser function: $e');
       throw Exception(e);
     }
   }
@@ -34,13 +35,34 @@ class FirebaseService {
         Map<String, dynamic> userData =
             userSnapshot.data() as Map<String, dynamic>;
         balance = userData['balance']?.toDouble() ?? 0.0;
-        //log('balance: $balance'.toString());
         return balance;
       } else {
         // if document doesn't exist
         return 0.0;
       }
     } catch (e) {
+      log('Error in getBalance function: $e');
+      throw Exception(e);
+    }
+  }
+
+  // sets user's balance, takes both negative and positive double (sale/acquisition)
+  Future<void> setBalance(double transactionSum) async {
+    try {
+      String currentUserUid = _auth.currentUser!.uid;
+      DocumentReference userRef =
+          _database.collection('users').doc(currentUserUid);
+
+      await _database.runTransaction((transaction) async {
+        DocumentSnapshot snapshot = await transaction.get(userRef);
+        double currentBalance = snapshot['balance']?.toDouble() ?? 0.0;
+
+        double newBalance = currentBalance + transactionSum;
+
+        transaction.update(userRef, {'balance': newBalance});
+      });
+    } catch (e) {
+      log('Error in setBalance function: $e');
       throw Exception(e);
     }
   }
@@ -68,6 +90,81 @@ class FirebaseService {
       log('portfolioData: $portfolioData');
       return portfolioData;
     } catch (e) {
+      log('Error in getPortfolio function: $e');
+      throw Exception(e);
+    }
+  }
+
+  // sell stocks
+  Future<bool> sell(
+    int amount,
+    double rate,
+    String stockName,
+    double timestamp,
+  ) async {
+    log('in sell');
+    try {
+      String currentUserUid = _auth.currentUser!.uid;
+      String timestampString = timestamp.toString();
+
+      DocumentReference salesRef = _database
+          .collection('users')
+          .doc(currentUserUid)
+          .collection('sales')
+          .doc(timestampString);
+
+      await salesRef.set({
+        "amount": amount,
+        "rate": rate,
+        "stockName": stockName,
+        "symbol": "USD",
+        "timestamp": timestamp,
+      });
+      double transactionSum = rate * amount;
+      setBalance(transactionSum);
+      return true;
+    } catch (e) {
+      log('Error in sell function: $e');
+      throw Exception(e);
+    }
+  }
+
+  // buy stocks, returns true if the transaction suceeded, false if not
+  Future<bool> buy(
+    int amount,
+    double rate,
+    String stockName,
+    double timestamp,
+  ) async {
+    try {
+      log('in buy');
+      String currentUserUid = _auth.currentUser!.uid;
+      String timestampString = timestamp.toString();
+      double transactionSum = rate * amount;
+      double balance = await getBalance();
+
+      if (balance >= transactionSum) {
+        DocumentReference salesRef = _database
+            .collection('users')
+            .doc(currentUserUid)
+            .collection('purchases')
+            .doc(timestampString);
+
+        await salesRef.set({
+          "amount": amount,
+          "rate": rate,
+          "stockName": stockName,
+          "symbol": "USD",
+          "timestamp": timestamp,
+        });
+        await setBalance(-transactionSum);
+        return true;
+      } else {
+        log('not enough \$\$\$');
+        return false;
+      }
+    } catch (e) {
+      log('Error in buy function: $e');
       throw Exception(e);
     }
   }
