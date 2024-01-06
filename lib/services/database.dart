@@ -23,26 +23,50 @@ class FirebaseService {
     }
   }
 
-  // call when you want to get the remaining balance
+  // call to get the remaining balance
   Future<double> getBalance() async {
-    log('in getBalance');
     late double balance;
     try {
       DocumentSnapshot userSnapshot =
           await _database.collection('users').doc(_auth.currentUser!.uid).get();
 
       if (userSnapshot.exists) {
-        log('have the snapshot');
         Map<String, dynamic> userData =
             userSnapshot.data() as Map<String, dynamic>;
-        log('userdata: $userData');
         balance = userData['balance']?.toDouble() ?? 0.0;
-        log('balance: $balance'.toString());
+        //log('balance: $balance'.toString());
         return balance;
       } else {
         // if document doesn't exist
         return 0.0;
       }
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  // call to get the portfolio
+  Future<Map<String, int>> getPortfolio() async {
+    try {
+      QuerySnapshot portfolioSnapshot = await _database
+          .collection('users')
+          .doc(_auth.currentUser!.uid)
+          .collection('portfolio')
+          .get();
+
+      Map<String, int> portfolioData = {};
+
+      for (var doc in portfolioSnapshot.docs) {
+        Map<String, dynamic>? data = doc.data() as Map<String, dynamic>?;
+        if (data != null && data.containsKey('amount')) {
+          int amount = data['amount'] as int;
+          portfolioData[doc.id] = amount;
+        } else {
+          return {};
+        }
+      }
+      log('portfolioData: $portfolioData');
+      return portfolioData;
     } catch (e) {
       throw Exception(e);
     }
