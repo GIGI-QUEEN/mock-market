@@ -95,7 +95,7 @@ class FirebaseService {
     }
   }
 
-  // sell stocks
+  // sell stocks, returns true if the transaction suceeded, false if not
   Future<bool> sell(
     int amount,
     double rate,
