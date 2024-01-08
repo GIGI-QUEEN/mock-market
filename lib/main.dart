@@ -11,8 +11,9 @@ import 'package:stock_market/views/auth/login.view.dart';
 import 'package:stock_market/views/auth/signup.view.dart';
 import 'package:stock_market/views/constants/routes_names.dart';
 import 'package:stock_market/views/home.view.dart';
-import 'package:stock_market/views/main.view.dart';
 import 'package:stock_market/views/wallet.dart';
+
+import 'services/network.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,9 +25,11 @@ class MyApp extends StatelessWidget {
   final Future<FirebaseApp> _fbApp =
       Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // This widget is the root of your application.
+  final networkService = NetworkService();
+
   @override
   Widget build(BuildContext context) {
+    networkService.fetchStockData("WRB");
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<AuthenticationProvider>(

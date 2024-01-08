@@ -2,10 +2,11 @@ import 'dart:developer';
 import 'package:http/http.dart' as http;
 
 class NetworkService {
-  Future<void> fetchData() async {
-    log('fetchData');
+  Future<void> fetchStockData(String stockName) async {
+    log('in fetchData');
     try {
-      var url = Uri.parse('http://127.0.0.1:5001/stocks_list');
+      var url = Uri.parse('http://127.0.0.1:5001/exchange_rate/$stockName');
+
       var response = await http.get(url);
 
       if (response.statusCode == 200) {
