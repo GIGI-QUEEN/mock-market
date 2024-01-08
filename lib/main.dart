@@ -1,84 +1,71 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:stock_market/components/centered_circular_progress_indicator.dart';
 import 'package:stock_market/firebase_options.dart';
+import 'package:stock_market/providers/auth_provider.dart';
+import 'package:stock_market/theme.dart';
+import 'package:stock_market/views/auth/authenticate.view.dart';
+import 'package:stock_market/views/auth/login.view.dart';
+import 'package:stock_market/views/auth/signup.view.dart';
+import 'package:stock_market/views/constants/routes_names.dart';
+import 'package:stock_market/views/home.view.dart';
+import 'package:stock_market/views/main.view.dart';
+import 'package:stock_market/views/wallet.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
+  final Future<FirebaseApp> _fbApp =
+      Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(
-                filled: true,
-                hintText: 'email',
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10))),
-              ),
-            ),
-            TextField(
-              controller: _passwordController,
-              decoration: const InputDecoration(
-                filled: true,
-                hintText: 'password',
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10))),
-              ),
-            ),
-            ElevatedButton(
-                onPressed: () async {
-                  try {
-                    await _firebaseAuth.createUserWithEmailAndPassword(
-                        email: _emailController.text.trim(),
-                        password: _passwordController.text.trim());
-                  } catch (e) {
-                    throw Exception(e);
-                  }
-                },
-                child: const Text('submit'))
-          ],
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<AuthenticationProvider>(
+          create: (_) => AuthenticationProvider(FirebaseAuth.instance),
         ),
+        StreamProvider(
+          create: (context) => context.read<AuthenticationProvider>().authState,
+          initialData: null,
+        ),
+      ],
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        theme: lightTheme,
+        routes: {
+          signIn: (context) => const LoginView(),
+          signUp: (context) => const SignupView(),
+          authenticate: (context) => const Authenticate(),
+          wallet: (context) => const WalletPage(),
+          home: (context) => const HomeView(),
+        },
+        home: FutureBuilder(
+            future: _fbApp,
+            builder: (context, snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.none:
+                  return const Text('Not loaded');
+                case ConnectionState.waiting:
+                  return const CenteredCircularProgressIndicator();
+                case ConnectionState.active:
+                case ConnectionState.done:
+                  if (snapshot.hasData) {
+                    return const Authenticate();
+                  } else if (snapshot.hasError) {
+                    return const Text('error');
+                  } else {
+                    return const Text('Not available');
+                  }
+              }
+            }),
       ),
     );
   }

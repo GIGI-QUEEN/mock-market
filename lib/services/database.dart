@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class FirebaseService {
+class DatabaseService {
   final _database = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
 
