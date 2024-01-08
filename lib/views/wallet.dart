@@ -11,7 +11,7 @@ class WalletPage extends StatefulWidget {
 }
 
 class WalletPageState extends State<WalletPage> {
-  final FirebaseService firebaseService = FirebaseService();
+  final DatabaseService firebaseService = DatabaseService();
   Map<String, int> _portfolio = {};
 
   @override
