@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 ThemeData lightTheme = ThemeData(
-  textTheme: GoogleFonts.ralewayTextTheme()
+  textTheme: GoogleFonts.robotoTextTheme()
       .apply(bodyColor: const Color.fromARGB(255, 0, 0, 0)),
   colorScheme: ColorScheme.fromSeed(
     background: Colors.white,

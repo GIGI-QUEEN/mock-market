@@ -14,8 +14,6 @@ import 'package:stock_market/views/constants/routes_names.dart';
 import 'package:stock_market/views/home.view.dart';
 import 'package:stock_market/views/wallet.dart';
 
-import 'services/network.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
@@ -26,11 +24,11 @@ class MyApp extends StatelessWidget {
   final Future<FirebaseApp> _fbApp =
       Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  final networkService = NetworkService();
+  // final networkService = NetworkService();
 
   @override
   Widget build(BuildContext context) {
-    networkService.fetchStockData("WRB");
+    //  networkService.fetchStockData("WRB");
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<AuthenticationProvider>(
