@@ -23,8 +23,8 @@ class NetworkService {
       print('Error: $e');
     }
   }
-
-  WebSocketChannel getRealTimeStockData() {
+//Currently unused
+/*   WebSocketChannel getRealTimeStockData() {
     final channel = WebSocketChannel.connect(
       Uri.parse('wss://ws.finnhub.io?token=$token'),
     );
@@ -45,5 +45,5 @@ class NetworkService {
       final stock = Stock.fromJson2(data);
       stocksMap.update(stock.symbol, (value) => stock, ifAbsent: () => stock);
     }); */
-  }
+  } */
 }
