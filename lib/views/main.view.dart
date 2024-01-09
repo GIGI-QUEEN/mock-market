@@ -13,7 +13,7 @@ class MainView extends StatefulWidget {
 class _MainViewState extends State<MainView> {
   int _currentIndex = 0;
   final List<Widget> _screens = [
-    const HomeView(),
+    HomeView(),
     const WalletPage(),
     const SettingsView(),
   ];
