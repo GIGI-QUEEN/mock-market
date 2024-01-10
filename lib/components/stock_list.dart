@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stock_market/models/stock.dart';
 import 'package:stock_market/utils/utils.dart';
+import 'package:stock_market/views/historical.dart';
 
 class StockListView extends StatelessWidget {
   const StockListView({super.key, required this.stocksMap});
@@ -37,6 +38,15 @@ class StockTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: ListTile(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  StockHistoricalView(stockSymbol: stock.symbol),
+            ),
+          );
+        },
         leading: Container(
           width: 50,
           height: 50,

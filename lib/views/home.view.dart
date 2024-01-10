@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:stock_market/components/stock_list.dart';
 import 'package:stock_market/components/wallet_summary_card.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:stock_market/constants/stock_list.dart';
 import 'package:stock_market/views/historical.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -79,14 +80,14 @@ class _HomeViewState extends State<HomeView> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            WalletSummaryCard(),
+            const WalletSummaryCard(),
             const SizedBox(
               height: 25,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const Text(
                   'Watchlist',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
