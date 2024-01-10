@@ -4,10 +4,15 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:stock_market/views/historical.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+
 import 'package:stock_market/models/stock.dart';
 import 'package:stock_market/providers/stock_data_provider.dart';
 import 'package:stock_market/services/network.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+
+final String? token = dotenv.env['FINNHUB_TOKEN'];
 
 class HomeView extends StatefulWidget {
   HomeView({super.key});
@@ -17,7 +22,6 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-//  NetworkService _networkService = NetworkService();
   final channel = WebSocketChannel.connect(
     Uri.parse('wss://ws.finnhub.io?token=$token'),
   );
@@ -81,6 +85,15 @@ class _HomeViewState extends State<HomeView> {
                   Text('Price: ${stock.price.toStringAsFixed(2)}'),
                 ],
               ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        StockHistoricalView(stockSymbol: stock.symbol),
+                  ),
+                );
+              },
             );
           }),
     );

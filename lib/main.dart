@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stock_market/components/centered_circular_progress_indicator.dart';
@@ -10,14 +11,15 @@ import 'package:stock_market/theme.dart';
 import 'package:stock_market/views/auth/authenticate.view.dart';
 import 'package:stock_market/views/auth/login.view.dart';
 import 'package:stock_market/views/auth/signup.view.dart';
-import 'package:stock_market/views/constants/routes_names.dart';
+import 'package:stock_market/constants/routes_names.dart';
 import 'package:stock_market/views/home.view.dart';
 import 'package:stock_market/views/wallet.dart';
 
 import 'services/network.dart';
 
-void main() async {
+Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
+ await dotenv.load(fileName: ".env");
   runApp(MyApp());
 }
 
@@ -26,11 +28,8 @@ class MyApp extends StatelessWidget {
   final Future<FirebaseApp> _fbApp =
       Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  final networkService = NetworkService();
-
   @override
   Widget build(BuildContext context) {
-    networkService.fetchStockData("WRB");
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<AuthenticationProvider>(

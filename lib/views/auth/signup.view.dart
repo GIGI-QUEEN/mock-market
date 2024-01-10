@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:stock_market/components/custom_text_form_field.dart';
 import 'package:stock_market/providers/auth_provider.dart';
 import 'package:stock_market/utils/utils.dart';
-import 'package:stock_market/views/constants/routes_names.dart';
+import 'package:stock_market/constants/routes_names.dart';
 
 class SignupView extends StatefulWidget {
   const SignupView({super.key});

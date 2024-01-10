@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stock_market/providers/auth_provider.dart';
-import 'package:stock_market/views/constants/routes_names.dart';
+import 'package:stock_market/constants/routes_names.dart';
 
 class SettingsView extends StatelessWidget {
   const SettingsView({super.key});
