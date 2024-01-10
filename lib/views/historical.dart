@@ -1,3 +1,4 @@
+import 'package:stock_market/components/buy_button.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -90,7 +91,8 @@ class _StockHistoricalViewState extends State<StockHistoricalView> {
                       _showCandlestickChart = !_showCandlestickChart;
                     });
                   },
-                  child: Text(_showCandlestickChart ? 'TODO: Line' : 'Candlestick'),
+                  child: Text(
+                      _showCandlestickChart ? 'TODO: Line' : 'Candlestick'),
                 ),
               ],
             ),
@@ -138,26 +140,29 @@ class _StockHistoricalViewState extends State<StockHistoricalView> {
               children: [
                 ElevatedButton(
                   onPressed: () => fetchDataForDuration("7d"),
-                  child: Text('1W'),
+                  child: const Text('1W'),
                 ),
                 ElevatedButton(
                   onPressed: () => fetchDataForDuration("1m"),
-                  child: Text('1M'),
+                  child: const Text('1M'),
                 ),
                 ElevatedButton(
                   onPressed: () => fetchDataForDuration("3m"),
-                  child: Text('3M'),
+                  child: const Text('3M'),
                 ),
                 ElevatedButton(
                   onPressed: () => fetchDataForDuration("6m"),
-                  child: Text('6M'),
+                  child: const Text('6M'),
                 ),
                 ElevatedButton(
                   onPressed: () => fetchDataForDuration("1y"),
-                  child: Text('1Y'),
+                  child: const Text('1Y'),
                 ),
               ],
-            )
+            ),
+            BuyButton(
+              stockSymbol: widget.stockSymbol,
+            ),
           ],
         ),
       ),
