@@ -2,8 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:stock_market/components/stock_list.dart';
+import 'package:stock_market/components/wallet_summary_card.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:stock_market/views/historical.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -29,16 +33,13 @@ class _HomeViewState extends State<HomeView> {
   final Map<String, Stock> stocksMap = {};
 
   getRealTimeStockData() {
-    final aapl = {'type': 'subscribe', 'symbol': 'AAPL'};
-    final amzn = {'type': 'subscribe', 'symbol': 'AMZN'};
-    final tsla = {'type': 'subscribe', 'symbol': 'TSLA'};
-    channel.sink.add(jsonEncode(aapl));
-    channel.sink.add(jsonEncode(amzn));
-    channel.sink.add(jsonEncode(tsla));
+    for (var stock in stockList) {
+      final message = {'type': 'subscribe', 'symbol': stock};
+      channel.sink.add(jsonEncode(message));
+    }
 
     _streamSubscription = channel.stream.listen((event) {
       final data = jsonDecode(event);
-
       final stock = Stock.fromJson2(data);
       setState(() {
         stocksMap.update(stock.symbol, (value) => stock, ifAbsent: () => stock);
@@ -66,36 +67,47 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    //  final stocksModel = Provider.of<StocksDataProvider>(context);
-    //stocksModel.listenToStream();
+    final firebaseUser = context.watch<User?>();
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home Page'),
+        title: Text(
+          firebaseUser != null ? 'Hi, ${firebaseUser.email!}' : '',
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
       ),
-      body: ListView.builder(
-          itemCount: stocksMap.length,
-          itemBuilder: (context, index) {
-            final stock = stocksMap.values.elementAt(index);
-            // log(stock.toString());
-            return ListTile(
-              title: Text('Symbol: ${stock.symbol}'),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Price: ${stock.price.toStringAsFixed(2)}'),
-                ],
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        StockHistoricalView(stockSymbol: stock.symbol),
-                  ),
-                );
-              },
-            );
-          }),
+      body: Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            WalletSummaryCard(),
+            const SizedBox(
+              height: 25,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Watchlist',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                TextButton(
+                    onPressed: () {},
+                    child: Text(
+                      'See all',
+                      style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                          fontWeight: FontWeight.bold),
+                    )),
+              ],
+            ),
+            const SizedBox(
+              height: 5,
+            ),
+            Expanded(child: StockListView(stocksMap: stocksMap)),
+          ],
+        ),
+        // child: StockListView(stocksMap: stocksMap),
+      ),
     );
   }
 }

@@ -15,11 +15,9 @@ import 'package:stock_market/constants/routes_names.dart';
 import 'package:stock_market/views/home.view.dart';
 import 'package:stock_market/views/wallet.dart';
 
-import 'services/network.dart';
-
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
- await dotenv.load(fileName: ".env");
+  await dotenv.load(fileName: ".env");
   runApp(MyApp());
 }
 

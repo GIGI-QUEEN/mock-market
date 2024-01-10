@@ -28,3 +28,32 @@ String? loginPasswordValidator(String? value) {
   }
   return null;
 }
+
+String getCompanyName(String symbol) {
+  switch (symbol) {
+    case 'GOOGL':
+      return 'Google, Inc';
+    case 'TSLA':
+      return 'Tesla, Inc.';
+    case 'MSFT':
+      return 'Microsoft Corp.';
+    case 'AMZN':
+      return 'Amazon.com, Inc.';
+    case 'AAPL':
+      return 'Apple Inc';
+    case 'META':
+      return 'Meta Platforms, Inc.';
+    case 'BRK.B':
+      return 'Berkshire Hathaway Inc. New';
+    case 'NVDA':
+      return 'Nvidia Corporation';
+    case 'V':
+      return 'Visa';
+    case 'MA':
+      return 'Mastercard Incorporated';
+    case 'NFLX':
+      return 'Netflix, Inc.';
+  }
+
+  return '';
+}
