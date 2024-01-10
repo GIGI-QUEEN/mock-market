@@ -22,6 +22,8 @@ class _StockHistoricalViewState extends State<StockHistoricalView> {
   late double _maximumValue;
   late DateTime _minimumDate;
   late DateTime _maximumDate;
+  bool _showCandlestickChart = true;
+  String _dateFormatPattern = 'dd/M';
 
   @override
   void initState() {
@@ -76,41 +78,108 @@ class _StockHistoricalViewState extends State<StockHistoricalView> {
     const Duration bufferDuration = Duration(days: 1);
 
     return SafeArea(
-        child: Scaffold(
-      body: _chartData.isNotEmpty
-          ? SfCartesianChart(
-              title: ChartTitle(text: widget.stockSymbol),
-              trackballBehavior: _trackballBehavior,
-              series: <CandleSeries>[
-                CandleSeries<ChartSampleData, DateTime>(
-                  dataSource: _chartData,
-                  xValueMapper: (ChartSampleData sales, _) => sales.x,
-                  lowValueMapper: (ChartSampleData sales, _) => sales.low,
-                  highValueMapper: (ChartSampleData sales, _) => sales.high,
-                  openValueMapper: (ChartSampleData sales, _) => sales.open,
-                  closeValueMapper: (ChartSampleData sales, _) => sales.close,
-                )
+      child: Scaffold(
+        body: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _showCandlestickChart = !_showCandlestickChart;
+                    });
+                  },
+                  child: Text(_showCandlestickChart ? 'TODO: Line' : 'Candlestick'),
+                ),
               ],
-              //primaryXAxis: const DateTimeAxis(),
-              primaryXAxis: DateTimeAxis(
-                interval: 1,
-                dateFormat:
-                    DateFormat('dd/M'),
-                minimum: _minimumDate.add(bufferDuration),
-                maximum: _maximumDate.subtract(bufferDuration),
-                majorGridLines: const MajorGridLines(width: 0),
-              ),
+            ),
+            _chartData.isNotEmpty
+                ? _showCandlestickChart
+                    ? SfCartesianChart(
+                        title: ChartTitle(text: widget.stockSymbol),
+                        trackballBehavior: _trackballBehavior,
+                        series: <CandleSeries>[
+                          CandleSeries<ChartSampleData, DateTime>(
+                            dataSource: _chartData,
+                            xValueMapper: (ChartSampleData sales, _) => sales.x,
+                            lowValueMapper: (ChartSampleData sales, _) =>
+                                sales.low,
+                            highValueMapper: (ChartSampleData sales, _) =>
+                                sales.high,
+                            openValueMapper: (ChartSampleData sales, _) =>
+                                sales.open,
+                            closeValueMapper: (ChartSampleData sales, _) =>
+                                sales.close,
+                          )
+                        ],
+                        //primaryXAxis: const DateTimeAxis(),
+                        primaryXAxis: DateTimeAxis(
+                          interval: 1,
+                          dateFormat: DateFormat(_dateFormatPattern),
+                          minimum: _minimumDate.add(bufferDuration),
+                          maximum: _maximumDate.subtract(bufferDuration),
+                          majorGridLines: const MajorGridLines(width: 0),
+                        ),
 
-              primaryYAxis: NumericAxis(
-                minimum: _minimumValue - 0.5,
-                maximum: _maximumValue + 0.5,
-                interval: 0.54,
-                numberFormat: NumberFormat.simpleCurrency(decimalDigits: 2),
-                // majorGridLines: const MajorGridLines(width: 0),
-              ),
+                        primaryYAxis: NumericAxis(
+                          minimum: _minimumValue - 0.5,
+                          maximum: _maximumValue + 0.5,
+                          interval: 1.5,
+                          numberFormat:
+                              NumberFormat.simpleCurrency(decimalDigits: 2),
+                          // majorGridLines: const MajorGridLines(width: 0),
+                        ),
+                      )
+                    : const SfCartesianChart()
+                : const Center(child: CircularProgressIndicator()),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () => fetchDataForDuration("7d"),
+                  child: Text('1W'),
+                ),
+                ElevatedButton(
+                  onPressed: () => fetchDataForDuration("1m"),
+                  child: Text('1M'),
+                ),
+                ElevatedButton(
+                  onPressed: () => fetchDataForDuration("3m"),
+                  child: Text('3M'),
+                ),
+                ElevatedButton(
+                  onPressed: () => fetchDataForDuration("6m"),
+                  child: Text('6M'),
+                ),
+                ElevatedButton(
+                  onPressed: () => fetchDataForDuration("1y"),
+                  child: Text('1Y'),
+                ),
+              ],
             )
-          : const Center(child: CircularProgressIndicator()),
-    ));
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> fetchDataForDuration(String duration) async {
+    _chartData = await getChartData(widget.stockSymbol, duration);
+    if (mounted) {
+      setState(() {
+        _minimumValue = calculateMinimumValue(_chartData);
+        _maximumValue = calculateMaximumValue(_chartData);
+        _minimumDate = calculateMinimumDate(_chartData);
+        _maximumDate = calculateMaximumDate(_chartData);
+
+        if (duration == "7d" || duration == "1m") {
+          _dateFormatPattern = 'dd/M';
+        } else {
+          _dateFormatPattern = 'MMM/yy';
+        }
+      });
+    }
   }
 
   List<ChartSampleData> parseChartDataFromJson(List<dynamic> jsonList) {

@@ -36,7 +36,7 @@ class WalletSummaryCard extends StatelessWidget {
           const SizedBox(
             height: 25,
           ),
-          Container(
+        Container(
             width: double.infinity,
             height: 40,
             padding: const EdgeInsets.symmetric(horizontal: 15),
