@@ -6,10 +6,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:stock_market/components/see_all_button.dart';
+import 'package:stock_market/components/stock_card.dart';
 import 'package:stock_market/components/stock_list.dart';
 import 'package:stock_market/components/wallet_summary_card.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:stock_market/constants/stock_list.dart';
+import 'package:stock_market/utils/utils.dart';
 import 'package:stock_market/views/historical.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -77,28 +80,58 @@ class _HomeViewState extends State<HomeView> {
         ),
       ),
       body: Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         child: Column(
           children: [
             const WalletSummaryCard(),
-            const SizedBox(
-              height: 25,
-            ),
-            Row(
+            const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
+                  'My Portfolio',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SeeAllButton(),
+              ],
+            ),
+            stocksMap.isNotEmpty
+                ? Expanded(
+                    child: ListView(
+                      // This next line does the trick.
+                      scrollDirection: Axis.horizontal,
+                      children: <Widget>[
+                        StockCard(
+                          stock: stocksMap['AAPL']!,
+                        ),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        StockCard(stock: stocksMap['TSLA']!),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        StockCard(stock: stocksMap['AMZN']!),
+                      ],
+                    ),
+                  )
+                : Text(''),
+            /* ListView.builder(
+              itemCount: 3,
+              itemBuilder: (context, index) {
+                
+              },
+            ), */
+            /* const SizedBox(
+              height: 15,
+            ), */
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
                   'Watchlist',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      'See all',
-                      style: TextStyle(
-                          color: Theme.of(context).primaryColor,
-                          fontWeight: FontWeight.bold),
-                    )),
+                SeeAllButton(),
               ],
             ),
             const SizedBox(

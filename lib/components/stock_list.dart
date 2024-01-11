@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stock_market/components/stock_logo.dart';
 import 'package:stock_market/models/stock.dart';
 import 'package:stock_market/utils/utils.dart';
 import 'package:stock_market/views/historical.dart';
@@ -47,25 +48,10 @@ class StockTile extends StatelessWidget {
             ),
           );
         },
-        leading: Container(
-          width: 50,
-          height: 50,
-          padding: const EdgeInsets.all(10),
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.white,
-          ),
-          child: Container(
-            width: 35,
-            height: 35,
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-                image: DecorationImage(
-              image: AssetImage(
-                'assets/logos2/${stock.symbol.toLowerCase()}.png',
-              ),
-            )),
-          ),
+        leading: StockLogo(
+          stockSymbol: stock.symbol,
+          mainContainerSize: 50,
+          imageContainerSize: 35,
         ),
         title: Text(
           getCompanyName(stock.symbol),
@@ -75,7 +61,7 @@ class StockTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '\$${stock.price.toStringAsFixed(2)}',
+              '\$${formatNumber(stock.price)}',
               style:
                   TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
             ),

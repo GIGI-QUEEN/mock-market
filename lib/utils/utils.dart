@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:stock_market/components/centered_circular_progress_indicator.dart';
 
 String? signUpEmailValidator(String? value) {
@@ -78,4 +79,9 @@ Widget handleSnapshotState(
         return const Text('Not available');
       }
   }
+}
+
+String formatNumber(num number) {
+  final formatter = NumberFormat("#,###.##");
+  return formatter.format(number);
 }
