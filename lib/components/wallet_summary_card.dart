@@ -1,11 +1,19 @@
+import 'dart:developer';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:stock_market/providers/account_provider.dart';
+import 'package:stock_market/utils/utils.dart';
 
 class WalletSummaryCard extends StatelessWidget {
   const WalletSummaryCard({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final accountModel = Provider.of<AccountProvider>(context);
+    final firebaseUser = context.watch<User?>();
     return Container(
       width: double.infinity,
       height: 200,
@@ -25,14 +33,40 @@ class WalletSummaryCard extends StatelessWidget {
           const SizedBox(
             height: 5,
           ),
-          Text(
-            '\$23,245.87',
-            style: GoogleFonts.openSans(
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
-              fontSize: 34,
-            ),
-          ),
+          Text('\$${accountModel.accountData?.balance}',
+              style: GoogleFonts.openSans(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+                fontSize: 34,
+              )),
+          /*   FutureBuilder(
+              future: firebaseUser != null
+                  ? accountModel.getUserBalance(firebaseUser)
+                  : null,
+              builder: (context, snapshot) {
+                //   log('state: ${snapshot.connectionState.toString()}');
+                if (snapshot.hasData) {
+                  //log('data: ${snapshot.data.toString()}');
+                }
+                return handleSnapshotState(
+                    snapshot,
+                    Text(
+                      '\$${accountModel.balance}',
+                      style: GoogleFonts.openSans(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 34,
+                      ),
+                    ));
+                /*    return Text(
+                  '\$${accountModel.balance}',
+                  style: GoogleFonts.openSans(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 34,
+                  ),
+                ); */
+              }), */
           const SizedBox(
             height: 25,
           ),

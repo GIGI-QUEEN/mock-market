@@ -1,21 +1,24 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:stock_market/models/user_account.dart';
 
 class DatabaseService {
   final _database = FirebaseFirestore.instance;
-  final _auth = FirebaseAuth.instance;
+  //final _auth = FirebaseAuth.instance;
 
   // call when adding new user, pass in emailcontroller text
-  Future<void> addUser(String email) async {
+  Future<void> addUser(User user) async {
     try {
-      DocumentReference userRef = _database.collection('users').doc();
-      String uid = userRef.id;
+      DocumentReference userRef = _database.collection('users').doc(user.uid);
+      // String uid = userRef.id;
 
       await userRef.set({
-        "uid": uid,
-        "email": email,
+        "uid": user.uid,
+        "email": user.email,
         "balance": 1000000,
       });
     } catch (e) {
@@ -25,11 +28,11 @@ class DatabaseService {
   }
 
   // call to get the remaining balance
-  Future<double> getBalance() async {
+  Future<double> getBalance(User user) async {
     late double balance;
     try {
       DocumentSnapshot userSnapshot =
-          await _database.collection('users').doc(_auth.currentUser!.uid).get();
+          await _database.collection('users').doc(user.uid).get();
 
       if (userSnapshot.exists) {
         Map<String, dynamic> userData =
@@ -47,9 +50,9 @@ class DatabaseService {
   }
 
   // sets user's balance, takes both negative and positive double (sale/acquisition)
-  Future<void> setBalance(double transactionSum) async {
+  Future<void> setBalance(User user, double transactionSum) async {
     try {
-      String currentUserUid = _auth.currentUser!.uid;
+      String currentUserUid = user.uid;
       DocumentReference userRef =
           _database.collection('users').doc(currentUserUid);
 
@@ -68,11 +71,11 @@ class DatabaseService {
   }
 
   // call to get the portfolio
-  Future<Map<String, int>> getPortfolio() async {
+  Future<Map<String, int>> getPortfolio(User user) async {
     try {
       QuerySnapshot portfolioSnapshot = await _database
           .collection('users')
-          .doc(_auth.currentUser!.uid)
+          .doc(user.uid)
           .collection('portfolio')
           .get();
 
@@ -97,6 +100,7 @@ class DatabaseService {
 
   // sell stocks, returns true if the transaction suceeded, false if not
   Future<bool> sell(
+    User user,
     int amount,
     double rate,
     String stockName,
@@ -104,7 +108,7 @@ class DatabaseService {
   ) async {
     log('in sell');
     try {
-      String currentUserUid = _auth.currentUser!.uid;
+      String currentUserUid = user.uid;
       String timestampString = timestamp.toString();
 
       DocumentReference salesRef = _database
@@ -121,7 +125,7 @@ class DatabaseService {
         "timestamp": timestamp,
       });
       double transactionSum = rate * amount;
-      setBalance(transactionSum);
+      setBalance(user, transactionSum);
       return true;
     } catch (e) {
       log('Error in sell function: $e');
@@ -131,6 +135,7 @@ class DatabaseService {
 
   // buy stocks, returns true if the transaction suceeded, false if not
   Future<bool> buy(
+    User user,
     int amount,
     double rate,
     String stockName,
@@ -138,10 +143,10 @@ class DatabaseService {
   ) async {
     try {
       log('in buy');
-      String currentUserUid = _auth.currentUser!.uid;
+      String currentUserUid = user.uid;
       String timestampString = timestamp.toString();
       double transactionSum = rate * amount;
-      double balance = await getBalance();
+      double balance = await getBalance(user);
 
       if (balance >= transactionSum) {
         DocumentReference salesRef = _database
@@ -157,7 +162,7 @@ class DatabaseService {
           "symbol": "USD",
           "timestamp": timestamp,
         });
-        await setBalance(-transactionSum);
+        await setBalance(user, -transactionSum);
         return true;
       } else {
         log('not enough \$\$\$');
@@ -167,5 +172,23 @@ class DatabaseService {
       log('Error in buy function: $e');
       throw Exception(e);
     }
+  }
+
+/*   Future<UserAccountModel> listenToUserAccountData(User user) async {
+    UserAccountModel accData = UserAccountModel(balance: 0);
+
+    _database.collection('users').doc(user.uid).snapshots().listen((event) {
+      //log('event: ${event}');
+      final data = event.data();
+      if (data != null) {
+        accData = UserAccountModel.fromJson(data);
+        log('b: ${accData.balance}');
+      }
+    });
+    return accData;
+  } */
+  Stream<DocumentSnapshot<Map<String, dynamic>>> listenToUserAccountData(
+      User user) {
+    return _database.collection('users').doc(user.uid).snapshots();
   }
 }

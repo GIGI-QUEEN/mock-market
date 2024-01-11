@@ -1,4 +1,7 @@
-import 'dart:math';
+import 'dart:developer';
+
+import 'package:flutter/material.dart';
+import 'package:stock_market/components/centered_circular_progress_indicator.dart';
 
 String? signUpEmailValidator(String? value) {
   if (value!.isEmpty ||
@@ -53,7 +56,26 @@ String getCompanyName(String symbol) {
       return 'Mastercard Incorporated';
     case 'NFLX':
       return 'Netflix, Inc.';
+    default:
+      return symbol;
   }
+}
 
-  return '';
+Widget handleSnapshotState(
+    AsyncSnapshot<dynamic> snapshot, Widget widgetToShow) {
+  switch (snapshot.connectionState) {
+    case ConnectionState.none:
+      return const Text('Not loaded');
+    case ConnectionState.waiting:
+      return const CenteredCircularProgressIndicator();
+    case ConnectionState.active:
+    case ConnectionState.done:
+      if (snapshot.hasData) {
+        return widgetToShow;
+      } else if (snapshot.hasError) {
+        return const Text('error');
+      } else {
+        return const Text('Not available');
+      }
+  }
 }

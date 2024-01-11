@@ -21,7 +21,7 @@ class WalletPageState extends State<WalletPage> {
   }
 
   Future<void> _loadData() async {
-    _portfolio = await firebaseService.getPortfolio();
+    // _portfolio = await firebaseService.getPortfolio();
     log('portfolio: $_portfolio');
     setState(() {});
   }
