@@ -2,7 +2,6 @@ import 'package:stock_market/components/buy_button.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'dart:developer';
 
 import '../services/network.dart';
 
@@ -23,7 +22,7 @@ class _StockHistoricalViewState extends State<StockHistoricalView> {
   late double _maximumValue;
   late DateTime _minimumDate;
   late DateTime _maximumDate;
-  bool _showCandlestickChart = true;
+  bool _showCandlestickChart = false;
   String _dateFormatPattern = 'dd/M';
 
   @override
@@ -76,96 +75,106 @@ class _StockHistoricalViewState extends State<StockHistoricalView> {
 
   @override
   Widget build(BuildContext context) {
-    const Duration bufferDuration = Duration(days: 1);
-
     return SafeArea(
       child: Scaffold(
         body: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      _showCandlestickChart = !_showCandlestickChart;
-                    });
-                  },
-                  child: Text(
-                      _showCandlestickChart ? 'TODO: Line' : 'Candlestick'),
-                ),
-              ],
-            ),
-            _chartData.isNotEmpty
-                ? _showCandlestickChart
-                    ? SfCartesianChart(
-                        title: ChartTitle(text: widget.stockSymbol),
-                        trackballBehavior: _trackballBehavior,
-                        series: <CandleSeries>[
-                          CandleSeries<ChartSampleData, DateTime>(
-                            dataSource: _chartData,
-                            xValueMapper: (ChartSampleData sales, _) => sales.x,
-                            lowValueMapper: (ChartSampleData sales, _) =>
-                                sales.low,
-                            highValueMapper: (ChartSampleData sales, _) =>
-                                sales.high,
-                            openValueMapper: (ChartSampleData sales, _) =>
-                                sales.open,
-                            closeValueMapper: (ChartSampleData sales, _) =>
-                                sales.close,
-                          )
-                        ],
-                        //primaryXAxis: const DateTimeAxis(),
-                        primaryXAxis: DateTimeAxis(
-                          interval: 1,
-                          dateFormat: DateFormat(_dateFormatPattern),
-                          minimum: _minimumDate.add(bufferDuration),
-                          maximum: _maximumDate.subtract(bufferDuration),
-                          majorGridLines: const MajorGridLines(width: 0),
-                        ),
-
-                        primaryYAxis: NumericAxis(
-                          minimum: _minimumValue - 0.5,
-                          maximum: _maximumValue + 0.5,
-                          interval: 1.5,
-                          numberFormat:
-                              NumberFormat.simpleCurrency(decimalDigits: 2),
-                          // majorGridLines: const MajorGridLines(width: 0),
-                        ),
-                      )
-                    : const SfCartesianChart()
-                : const Center(child: CircularProgressIndicator()),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: () => fetchDataForDuration("7d"),
-                  child: const Text('1W'),
-                ),
-                ElevatedButton(
-                  onPressed: () => fetchDataForDuration("1m"),
-                  child: const Text('1M'),
-                ),
-                ElevatedButton(
-                  onPressed: () => fetchDataForDuration("3m"),
-                  child: const Text('3M'),
-                ),
-                ElevatedButton(
-                  onPressed: () => fetchDataForDuration("6m"),
-                  child: const Text('6M'),
-                ),
-                ElevatedButton(
-                  onPressed: () => fetchDataForDuration("1y"),
-                  child: const Text('1Y'),
-                ),
-              ],
-            ),
-            BuyButton(
-              stockSymbol: widget.stockSymbol,
-            ),
+            buildToggleButton(),
+            buildChart(),
+            buildButtons(),
+            BuyButton(stockSymbol: widget.stockSymbol),
           ],
         ),
       ),
+    );
+  }
+
+  Widget buildChart() {
+    return _chartData.isNotEmpty
+        ? _showCandlestickChart
+            ? SfCartesianChart(
+                title: ChartTitle(text: widget.stockSymbol),
+                trackballBehavior: _trackballBehavior,
+                series: <CandleSeries>[
+                  CandleSeries<ChartSampleData, DateTime>(
+                    dataSource: _chartData,
+                    xValueMapper: (ChartSampleData sales, _) => sales.x,
+                    lowValueMapper: (ChartSampleData sales, _) => sales.low,
+                    highValueMapper: (ChartSampleData sales, _) => sales.high,
+                    openValueMapper: (ChartSampleData sales, _) => sales.open,
+                    closeValueMapper: (ChartSampleData sales, _) => sales.close,
+                  )
+                ],
+                primaryXAxis: DateTimeAxis(
+                  interval: 1,
+                  dateFormat: DateFormat(_dateFormatPattern),
+                  minimum: _minimumDate.add(const Duration(days: 1)),
+                  maximum: _maximumDate.subtract(const Duration(days: 1)),
+                  majorGridLines: const MajorGridLines(width: 0),
+                ),
+                primaryYAxis: NumericAxis(
+                  minimum: _minimumValue - 0.5,
+                  maximum: _maximumValue + 0.5,
+                  interval: 1.5,
+                  numberFormat: NumberFormat.simpleCurrency(decimalDigits: 2),
+                ),
+              )
+            : SfCartesianChart(
+                title: ChartTitle(text: widget.stockSymbol),
+                trackballBehavior: _trackballBehavior,
+                series: <LineSeries>[
+                  LineSeries<ChartSampleData, DateTime>(
+                    animationDuration: 0,
+                    dataSource: _chartData,
+                    xValueMapper: (ChartSampleData sales, _) => sales.x,
+                    yValueMapper: (ChartSampleData sales, _) => sales.close,
+                  )
+                ],
+                primaryXAxis: DateTimeAxis(
+                  interval: 1,
+                  dateFormat: DateFormat(_dateFormatPattern),
+                  minimum: _minimumDate,
+                  maximum: _maximumDate,
+                  majorGridLines: const MajorGridLines(width: 0),
+                ),
+                primaryYAxis: NumericAxis(
+                  minimum: _minimumValue - 0.5,
+                  maximum: _maximumValue + 0.5,
+                  interval: 1.5,
+                  numberFormat: NumberFormat.simpleCurrency(decimalDigits: 2),
+                ),
+              )
+        : const Center(child: CircularProgressIndicator());
+  }
+
+  Widget buildToggleButton() {
+    return ElevatedButton(
+      onPressed: () {
+        setState(() {
+          _showCandlestickChart = !_showCandlestickChart;
+        });
+      },
+      child: Text(_showCandlestickChart ? 'Line' : 'Candlestick'),
+    );
+  }
+
+  Widget buildButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        buildButton("1W", "7d"),
+        buildButton("1M", "1m"),
+        buildButton("3M", "3m"),
+        buildButton("6M", "6m"),
+        buildButton("1Y", "1y"),
+      ],
+    );
+  }
+
+  Widget buildButton(String text, String duration) {
+    return ElevatedButton(
+      onPressed: () => fetchDataForDuration(duration),
+      child: Text(text),
     );
   }
 
@@ -204,12 +213,7 @@ class _StockHistoricalViewState extends State<StockHistoricalView> {
     List<Map<String, dynamic>> jsonDataList =
         await networkService.fetchHistoricalStockData(stockName, period)
             as List<Map<String, dynamic>>;
-    final result = parseChartDataFromJson(jsonDataList);
-    for (final r in result) {
-      log('r: ');
-      log(r.x.toString());
-    }
-    return result;
+    return parseChartDataFromJson(jsonDataList);
   }
 }
 
