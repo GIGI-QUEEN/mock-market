@@ -105,18 +105,13 @@ class _StockHistoricalViewState extends State<StockHistoricalView> {
                     closeValueMapper: (ChartSampleData sales, _) => sales.close,
                   )
                 ],
-                primaryXAxis: DateTimeAxis(
-                  interval: 1,
-                  dateFormat: DateFormat(_dateFormatPattern),
-                  minimum: _minimumDate.add(const Duration(days: 1)),
-                  maximum: _maximumDate.subtract(const Duration(days: 1)),
-                  majorGridLines: const MajorGridLines(width: 0),
+                primaryXAxis: const DateTimeAxis(
+                  isVisible: false,
+                  majorGridLines: MajorGridLines(width: 0),
                 ),
-                primaryYAxis: NumericAxis(
-                  minimum: _minimumValue - 0.5,
-                  maximum: _maximumValue + 0.5,
-                  interval: 1.5,
-                  numberFormat: NumberFormat.simpleCurrency(decimalDigits: 2),
+                primaryYAxis: const NumericAxis(
+                  isVisible: false,
+                  majorGridLines: MajorGridLines(width: 0),
                 ),
               )
             : SfCartesianChart(
@@ -128,20 +123,16 @@ class _StockHistoricalViewState extends State<StockHistoricalView> {
                     dataSource: _chartData,
                     xValueMapper: (ChartSampleData sales, _) => sales.x,
                     yValueMapper: (ChartSampleData sales, _) => sales.close,
+                    color: const Color(0xFF22CC9E),
                   )
                 ],
-                primaryXAxis: DateTimeAxis(
-                  interval: 1,
-                  dateFormat: DateFormat(_dateFormatPattern),
-                  minimum: _minimumDate,
-                  maximum: _maximumDate,
-                  majorGridLines: const MajorGridLines(width: 0),
+                primaryXAxis: const DateTimeAxis(
+                  isVisible: false,
+                  majorGridLines: MajorGridLines(width: 0),
                 ),
-                primaryYAxis: NumericAxis(
-                  minimum: _minimumValue - 0.5,
-                  maximum: _maximumValue + 0.5,
-                  interval: 1.5,
-                  numberFormat: NumberFormat.simpleCurrency(decimalDigits: 2),
+                primaryYAxis: const NumericAxis(
+                  isVisible: false,
+                  majorGridLines: MajorGridLines(width: 0),
                 ),
               )
         : const Center(child: CircularProgressIndicator());
