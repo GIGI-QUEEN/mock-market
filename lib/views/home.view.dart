@@ -71,7 +71,10 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
+    // final stocksDataModel = Provider.of<StocksDataProvider>(context);
     final firebaseUser = context.watch<User?>();
+    //  final stocksMap = stocksDataModel.stocksMap;
+    //stocksDataModel.getRealTimeStockData();
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -115,15 +118,6 @@ class _HomeViewState extends State<HomeView> {
                     ),
                   )
                 : Text(''),
-            /* ListView.builder(
-              itemCount: 3,
-              itemBuilder: (context, index) {
-                
-              },
-            ), */
-            /* const SizedBox(
-              height: 15,
-            ), */
             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
