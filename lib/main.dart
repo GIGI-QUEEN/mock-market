@@ -7,6 +7,7 @@ import 'package:stock_market/components/centered_circular_progress_indicator.dar
 import 'package:stock_market/firebase_options.dart';
 import 'package:stock_market/providers/auth_provider.dart';
 import 'package:stock_market/providers/stock_data_provider.dart';
+import 'package:stock_market/providers/stocks_data_provider.dart';
 import 'package:stock_market/theme.dart';
 import 'package:stock_market/views/auth/authenticate.view.dart';
 import 'package:stock_market/views/auth/login.view.dart';
@@ -30,6 +31,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider<StocksProvider>(
+          create: (context) => StocksProvider(),
+        ),
         ChangeNotifierProvider<AuthenticationProvider>(
           create: (_) => AuthenticationProvider(FirebaseAuth.instance),
         ),

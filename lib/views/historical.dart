@@ -1,7 +1,12 @@
+import 'dart:async';
+import 'dart:developer';
+
+import 'package:provider/provider.dart';
 import 'package:stock_market/components/buy_button.dart';
+import 'package:stock_market/models/stock.dart';
+import 'package:stock_market/providers/stocks_data_provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../services/network.dart';
 
@@ -15,20 +20,30 @@ class StockHistoricalView extends StatefulWidget {
 }
 
 class _StockHistoricalViewState extends State<StockHistoricalView> {
+  late StreamSubscription<String> _priceUpdateSubscription;
   final networkService = NetworkService();
   late List<ChartSampleData> _chartData = [];
   late TrackballBehavior _trackballBehavior;
-  late double _minimumValue;
-  late double _maximumValue;
-  late DateTime _minimumDate;
-  late DateTime _maximumDate;
   bool _showCandlestickChart = false;
   String _dateFormatPattern = 'dd/M';
+  late String _currentDuration = "7d";
 
   @override
   void initState() {
-    fetchChartData();
     super.initState();
+    _priceUpdateSubscription =
+        Provider.of<StocksProvider>(context, listen: false)
+            .priceUpdateStream
+            .where((symbol) => symbol == widget.stockSymbol)
+            .listen((symbol) {});
+
+    fetchChartData();
+  }
+
+  @override
+  void dispose() {
+    _priceUpdateSubscription.cancel();
+    super.dispose();
   }
 
   void fetchChartData() async {
@@ -37,10 +52,6 @@ class _StockHistoricalViewState extends State<StockHistoricalView> {
       setState(() {
         _trackballBehavior = TrackballBehavior(
             enable: true, activationMode: ActivationMode.singleTap);
-        _minimumValue = calculateMinimumValue(_chartData);
-        _maximumValue = calculateMaximumValue(_chartData);
-        _minimumDate = calculateMinimumDate(_chartData);
-        _maximumDate = calculateMaximumDate(_chartData);
       });
     }
   }
@@ -79,8 +90,27 @@ class _StockHistoricalViewState extends State<StockHistoricalView> {
       child: Scaffold(
         body: Column(
           children: [
+            const SizedBox(
+              height: 50.0,
+            ),
             buildToggleButton(),
-            buildChart(),
+            // buildChart(stocksMap),
+            StreamBuilder<String>(
+              stream: Provider.of<StocksProvider>(context, listen: false)
+                  .priceUpdateStream,
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                }
+
+                if (snapshot.hasData && snapshot.data == widget.stockSymbol) {
+                  fetchDataForDuration(_currentDuration);
+                }
+                return buildChart(
+                    Provider.of<StocksProvider>(context, listen: false)
+                        .stocksMap);
+              },
+            ),
             buildButtons(),
             BuyButton(stockSymbol: widget.stockSymbol),
           ],
@@ -89,14 +119,24 @@ class _StockHistoricalViewState extends State<StockHistoricalView> {
     );
   }
 
-  Widget buildChart() {
+  Widget buildChart(Map<String, Stock> stocksMap) {
+    if (stocksMap.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    // log(stocksMap['AAPL']!.price.toString());
+
     return _chartData.isNotEmpty
         ? _showCandlestickChart
             ? SfCartesianChart(
-                title: ChartTitle(text: widget.stockSymbol),
+                title: ChartTitle(
+                  text:
+                      "${widget.stockSymbol} - \$${stocksMap[widget.stockSymbol]?.price ?? 0.0}",
+                ),
+                // title: ChartTitle(text: widget.stockSymbol /* real time price*/),
                 trackballBehavior: _trackballBehavior,
                 series: <CandleSeries>[
                   CandleSeries<ChartSampleData, DateTime>(
+                    animationDuration: 0,
                     dataSource: _chartData,
                     xValueMapper: (ChartSampleData sales, _) => sales.x,
                     lowValueMapper: (ChartSampleData sales, _) => sales.low,
@@ -107,15 +147,21 @@ class _StockHistoricalViewState extends State<StockHistoricalView> {
                 ],
                 primaryXAxis: const DateTimeAxis(
                   isVisible: false,
-                  majorGridLines: MajorGridLines(width: 0),
+                  majorGridLines: MajorGridLines(color: Colors.transparent),
+                  minorGridLines: MinorGridLines(color: Colors.transparent),
                 ),
                 primaryYAxis: const NumericAxis(
                   isVisible: false,
-                  majorGridLines: MajorGridLines(width: 0),
+                  /* majorGridLines: MajorGridLines(width: 0),
+                  edgeLabelPlacement: EdgeLabelPlacement.hide,
+                  labelStyle: TextStyle(color: Colors.transparent), */
                 ),
               )
             : SfCartesianChart(
-                title: ChartTitle(text: widget.stockSymbol),
+                title: ChartTitle(
+                  text:
+                      "${widget.stockSymbol} - \$${stocksMap[widget.stockSymbol]?.price ?? 0.0}",
+                ),
                 trackballBehavior: _trackballBehavior,
                 series: <LineSeries>[
                   LineSeries<ChartSampleData, DateTime>(
@@ -132,7 +178,10 @@ class _StockHistoricalViewState extends State<StockHistoricalView> {
                 ),
                 primaryYAxis: const NumericAxis(
                   isVisible: false,
-                  majorGridLines: MajorGridLines(width: 0),
+                  /*  majorGridLines:
+                      MajorGridLines(width: 0, color: Colors.transparent),
+                  labelStyle: TextStyle(color: Colors.transparent),
+                  minorGridLines: MinorGridLines(color: Colors.transparent), */
                 ),
               )
         : const Center(child: CircularProgressIndicator());
@@ -173,11 +222,7 @@ class _StockHistoricalViewState extends State<StockHistoricalView> {
     _chartData = await getChartData(widget.stockSymbol, duration);
     if (mounted) {
       setState(() {
-        _minimumValue = calculateMinimumValue(_chartData);
-        _maximumValue = calculateMaximumValue(_chartData);
-        _minimumDate = calculateMinimumDate(_chartData);
-        _maximumDate = calculateMaximumDate(_chartData);
-
+        _currentDuration = duration;
         if (duration == "7d" || duration == "1m") {
           _dateFormatPattern = 'dd/M';
         } else {

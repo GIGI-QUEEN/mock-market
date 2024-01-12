@@ -11,7 +11,7 @@ final String apiKey = dotenv.env['IEX_API_KEY'] ?? '';
 
 class NetworkService {
   Future<List<Map<String, dynamic>>?> fetchHistoricalStockData(
-      String stock, String range /* List<String> stocks */) async {
+      String stock, String range) async {
     log('in fetchHistoricalStockData, range: $range');
 
     try {
@@ -21,7 +21,7 @@ class NetworkService {
       var response = await http.get(url);
 
       if (response.statusCode == 200) {
-        log('Response: ${response.body}');
+        //log('Response: ${response.body}');
         dynamic jsonData = json.decode(response.body);
         List<Map<String, dynamic>> dataList =
             jsonData.cast<Map<String, dynamic>>();

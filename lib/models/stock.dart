@@ -1,5 +1,5 @@
 class Stock {
-  final num price;
+  num price;
   final String symbol;
   final DateTime time;
 

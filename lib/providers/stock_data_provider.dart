@@ -11,6 +11,8 @@ class StocksDataProvider extends ChangeNotifier {
   late StreamSubscription _streamSubscription;
   final NetworkService _networkService = NetworkService();
 
+  get stocksMap => null;
+
   /*  void listenToStream() {
     final stream = _networkService.getRealTimeStockData();
 
@@ -33,6 +35,8 @@ class StocksDataProvider extends ChangeNotifier {
     //_streamSubscription.cancel();
     super.dispose();
   }
+
+  void updateStocksMap(Map<String, Stock> map) {}
 
   /*  StocksDataProvider() {
     listenToStream();
