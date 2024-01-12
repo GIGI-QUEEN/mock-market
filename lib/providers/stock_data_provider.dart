@@ -3,38 +3,51 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:stock_market/constants/stock_list.dart';
 import 'package:stock_market/models/stock.dart';
 import 'package:stock_market/services/network.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class StocksDataProvider extends ChangeNotifier {
-  Map<String, Stock> stocksData = {};
+  final Map<String, Stock> _stocksMap = {};
+  Map<String, Stock> get stocksMap => _stocksMap;
+
+  final channel = WebSocketChannel.connect(
+    Uri.parse('wss://ws.finnhub.io?token=$token'),
+  );
   late StreamSubscription _streamSubscription;
-  final NetworkService _networkService = NetworkService();
+  //final Map<String, Stock> stocksMap = {};
 
-  /*  void listenToStream() {
-    final stream = _networkService.getRealTimeStockData();
+  getRealTimeStockData() {
+    for (var stock in stockList) {
+      final message = {'type': 'subscribe', 'symbol': stock};
+      channel.sink.add(jsonEncode(message));
+    }
 
-    _streamSubscription = stream.listen((event) {
-      // log('event: $event');
+    _streamSubscription = channel.stream.listen((event) {
       final data = jsonDecode(event);
-
       final stock = Stock.fromJson2(data);
-      stocksData.update(stock.symbol, (value) => stock, ifAbsent: () => stock);
-      //log(stocksData.toString());
+      _stocksMap.update(stock.symbol, (value) => stock, ifAbsent: () => stock);
       notifyListeners();
+      /*  setState(() {
+        stocksMap.update(stock.symbol, (value) => stock, ifAbsent: () => stock);
+      }); */
     });
-  } */
+  }
 
-  void convertStreamData() {}
+  closeStream() {
+    channel.sink.close();
+  }
 
   @override
   void dispose() {
     // TODO: implement dispose
-    //_streamSubscription.cancel();
+    _streamSubscription.cancel();
+    closeStream();
     super.dispose();
   }
 
   /*  StocksDataProvider() {
-    listenToStream();
+    getRealTimeStockData();
   } */
 }

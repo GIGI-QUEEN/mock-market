@@ -19,7 +19,7 @@ class AuthenticationProvider extends ChangeNotifier {
     try {
       final UserCredential userCredential = await firebaseAuth
           .createUserWithEmailAndPassword(email: email, password: password);
-      _databaseService.addUser(userCredential.user!.email!);
+      _databaseService.addUser(userCredential.user!);
     } catch (e) {
       if (e is FirebaseAuthException) {
         if (e.code == 'email-already-in-use') {

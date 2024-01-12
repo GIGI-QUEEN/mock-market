@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stock_market/components/centered_circular_progress_indicator.dart';
 import 'package:stock_market/firebase_options.dart';
+import 'package:stock_market/providers/account_provider.dart';
 import 'package:stock_market/providers/auth_provider.dart';
 import 'package:stock_market/providers/stock_data_provider.dart';
 import 'package:stock_market/theme.dart';
@@ -38,7 +39,9 @@ class MyApp extends StatelessWidget {
           initialData: null,
         ),
         ChangeNotifierProvider<StocksDataProvider>(
-            create: (_) => StocksDataProvider())
+            create: (_) => StocksDataProvider()),
+        ChangeNotifierProvider<AccountProvider>(
+            create: (_) => AccountProvider())
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

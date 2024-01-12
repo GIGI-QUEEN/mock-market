@@ -35,7 +35,7 @@ class _MainViewState extends State<MainView> {
         destinations: [
           NavigationDestination(
               icon: Icon(
-                Icons.stacked_line_chart,
+                Icons.home,
                 color:
                     _currentIndex == 0 ? Theme.of(context).primaryColor : null,
               ),
