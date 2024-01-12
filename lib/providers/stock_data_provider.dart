@@ -47,6 +47,8 @@ class StocksDataProvider extends ChangeNotifier {
     super.dispose();
   }
 
+  void updateStocksMap(Map<String, Stock> map) {}
+
   /*  StocksDataProvider() {
     getRealTimeStockData();
   } */

@@ -5,10 +5,11 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:stock_market/models/user_account.dart';
+import 'package:intl/intl.dart';
 
 class DatabaseService {
   final _database = FirebaseFirestore.instance;
-  //final _auth = FirebaseAuth.instance;
+  final _auth = FirebaseAuth.instance;
 
   // call when adding new user, pass in emailcontroller text
   Future<void> addUser(User user) async {
@@ -28,16 +29,22 @@ class DatabaseService {
   }
 
   // call to get the remaining balance
-  Future<double> getBalance(User user) async {
-    late double balance;
+  Future<num> getBalance(User user) async {
+    late num balance;
+    log('in getBalance1');
     try {
+      log('in getBalance2');
       DocumentSnapshot userSnapshot =
           await _database.collection('users').doc(user.uid).get();
 
       if (userSnapshot.exists) {
+        log('in userSnapshot');
         Map<String, dynamic> userData =
             userSnapshot.data() as Map<String, dynamic>;
-        balance = userData['balance']?.toDouble() ?? 0.0;
+        // balance = userData['balance']?.toDouble() ?? 0.0;
+        balance = userData['balance'] ?? 0.0;
+        log('balance: $balance');
+        log('uid: ${user.uid}');
         return balance;
       } else {
         // if document doesn't exist
@@ -49,18 +56,20 @@ class DatabaseService {
     }
   }
 
-  // sets user's balance, takes both negative and positive double (sale/acquisition)
-  Future<void> setBalance(User user, double transactionSum) async {
+  // sets user's balance, takes both negative and positivenum (sale/acquisition)
+  Future<void> setBalance(User user, num transactionSum) async {
     try {
       String currentUserUid = user.uid;
       DocumentReference userRef =
           _database.collection('users').doc(currentUserUid);
 
       await _database.runTransaction((transaction) async {
+        log('in runTransaction');
         DocumentSnapshot snapshot = await transaction.get(userRef);
-        double currentBalance = snapshot['balance']?.toDouble() ?? 0.0;
+        //num currentBalance = snapshot['balance']?.toDouble() ?? 0.0;
+        num currentBalance = snapshot['balance'] ?? 0.0;
 
-        double newBalance = currentBalance + transactionSum;
+        num newBalance = currentBalance + transactionSum;
 
         transaction.update(userRef, {'balance': newBalance});
       });
@@ -71,11 +80,11 @@ class DatabaseService {
   }
 
   // call to get the portfolio
-  Future<Map<String, int>> getPortfolio(User user) async {
+  Future<Map<String, int>> getPortfolio() async {
     try {
       QuerySnapshot portfolioSnapshot = await _database
           .collection('users')
-          .doc(user.uid)
+          .doc(_auth.currentUser?.uid)
           .collection('portfolio')
           .get();
 
@@ -98,33 +107,83 @@ class DatabaseService {
     }
   }
 
+  // add stocks to portfolio
+  Future<void> addToPortfolio(User user, String stockName, num amount) async {
+    try {
+      String currentUserUid = user.uid;
+
+      DocumentReference portfolioRef = _database
+          .collection('users')
+          .doc(currentUserUid)
+          .collection('portfolio')
+          .doc(stockName);
+
+      DocumentSnapshot portfolioSnapshot = await portfolioRef.get();
+      if (portfolioSnapshot.exists) {
+        // if this stock already exists in portfolio, its amount is updated
+        int existingAmount = portfolioSnapshot.get('amount') as int;
+        num newAmount = existingAmount + amount;
+
+        await portfolioRef.update({
+          "amount": newAmount,
+        });
+      } else {
+        await portfolioRef.set({
+          "amount": amount,
+        });
+      }
+    } catch (e) {
+      log('Error in addToPortfolio function: $e');
+      throw Exception(e);
+    }
+  }
+
+  // remove stocks from portfolio
+  Future<void> removeFromPortfolio(User user, String stockName) async {
+    try {
+      String currentUserUid = user.uid;
+
+      DocumentReference portfolioRef = _database
+          .collection('users')
+          .doc(currentUserUid)
+          .collection('portfolio')
+          .doc(stockName);
+
+      await portfolioRef.delete();
+    } catch (e) {
+      log('Error in removeFromPortfolio function: $e');
+      throw Exception(e);
+    }
+  }
+
   // sell stocks, returns true if the transaction suceeded, false if not
   Future<bool> sell(
     User user,
     int amount,
-    double rate,
+    num rate,
     String stockName,
-    double timestamp,
   ) async {
     log('in sell');
     try {
       String currentUserUid = user.uid;
-      String timestampString = timestamp.toString();
-
+      Timestamp timestamp = Timestamp.now();
+      DateTime dateTime = timestamp.toDate();
+      String formattedDate =
+          DateFormat('MMM dd, yyyy, hh:mm:ss a').format(dateTime);
       DocumentReference salesRef = _database
           .collection('users')
           .doc(currentUserUid)
           .collection('sales')
-          .doc(timestampString);
+          .doc(formattedDate);
 
       await salesRef.set({
         "amount": amount,
         "rate": rate,
         "stockName": stockName,
         "symbol": "USD",
-        "timestamp": timestamp,
+        "timestamp": formattedDate,
       });
-      double transactionSum = rate * amount;
+      num transactionSum = rate * amount;
       setBalance(user, transactionSum);
       return true;
     } catch (e) {
@@ -136,24 +195,26 @@ class DatabaseService {
   // buy stocks, returns true if the transaction suceeded, false if not
   Future<bool> buy(
     User user,
-    int amount,
+    num amount,
     double rate,
     String stockName,
-    double timestamp,
   ) async {
     try {
       log('in buy');
       String currentUserUid = user.uid;
-      String timestampString = timestamp.toString();
+      Timestamp timestamp = Timestamp.now();
+      DateTime dateTime = timestamp.toDate();
+      String formattedDate =
+          DateFormat('MMM dd, yyyy, hh:mm:ss a').format(dateTime);
       double transactionSum = rate * amount;
-      double balance = await getBalance(user);
+      num balance = await getBalance(user);
 
       if (balance >= transactionSum) {
         DocumentReference salesRef = _database
             .collection('users')
             .doc(currentUserUid)
             .collection('purchases')
-            .doc(timestampString);
+            .doc(formattedDate);
 
         await salesRef.set({
           "amount": amount,
@@ -163,6 +224,7 @@ class DatabaseService {
           "timestamp": timestamp,
         });
         await setBalance(user, -transactionSum);
+        await addToPortfolio(user, stockName, amount);
         return true;
       } else {
         log('not enough \$\$\$');

@@ -1,24 +1,22 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:stock_market/components/see_all_button.dart';
 import 'package:stock_market/components/stock_card.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+
 import 'package:stock_market/components/stock_list.dart';
 import 'package:stock_market/components/wallet_summary_card.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:stock_market/constants/stock_list.dart';
 import 'package:stock_market/utils/utils.dart';
 import 'package:stock_market/views/historical.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'package:stock_market/models/stock.dart';
-import 'package:stock_market/providers/stock_data_provider.dart';
-import 'package:stock_market/services/network.dart';
+import 'package:stock_market/providers/stocks_data_provider.dart';
 
 final String? token = dotenv.env['FINNHUB_TOKEN'];
 
@@ -45,6 +43,14 @@ class _HomeViewState extends State<HomeView> {
     _streamSubscription = channel.stream.listen((event) {
       final data = jsonDecode(event);
       final stock = Stock.fromJson2(data);
+
+      final stocksProvider = context.read<StocksProvider>();
+
+      stocksProvider.updateStocksMap({
+        ...stocksProvider.stocksMap,
+        stock.symbol: stock,
+      });
+      stocksProvider.updateStockPrice(stock.symbol, stock.price.toDouble());
       setState(() {
         stocksMap.update(stock.symbol, (value) => stock, ifAbsent: () => stock);
       });
@@ -66,6 +72,7 @@ class _HomeViewState extends State<HomeView> {
     // TODO: implement dispose
     _streamSubscription.cancel();
     closeStream();
+    context.read<StocksProvider>().dispose(); // not sure about this one
     super.dispose();
   }
 
@@ -97,7 +104,7 @@ class _HomeViewState extends State<HomeView> {
                 SeeAllButton(),
               ],
             ),
-            stocksMap.isNotEmpty
+            /*    stocksMap.isNotEmpty
                 ? Expanded(
                     child: ListView(
                       // This next line does the trick.
@@ -117,7 +124,7 @@ class _HomeViewState extends State<HomeView> {
                       ],
                     ),
                   )
-                : Text(''),
+                : Text(''), */
             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

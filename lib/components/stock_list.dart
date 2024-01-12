@@ -10,8 +10,8 @@ class StockListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      //itemCount: stocksMap.length,
-      itemCount: 2,
+      itemCount: stocksMap.length,
+      //itemCount: 2,
 
       itemBuilder: (context, index) {
         final stock = stocksMap.values.elementAt(index);

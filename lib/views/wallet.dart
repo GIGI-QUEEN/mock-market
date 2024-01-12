@@ -1,6 +1,8 @@
 import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../services/database.dart';
 
 class WalletPage extends StatefulWidget {
@@ -21,7 +23,9 @@ class WalletPageState extends State<WalletPage> {
   }
 
   Future<void> _loadData() async {
-    // _portfolio = await firebaseService.getPortfolio();
+    //final user = context.watch<User?>();
+    _portfolio = await firebaseService.getPortfolio();
+
     log('portfolio: $_portfolio');
     setState(() {});
   }
@@ -30,31 +34,16 @@ class WalletPageState extends State<WalletPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Wallet'),
+        title: const Text('Portfolio'),
       ),
-      body: _buildWalletContent(),
-    );
-  }
-
-  Widget _buildWalletContent() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Text(
-            'Portfolio:',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-        ),
-        _buildPortfolioList(),
-      ],
+      body: _buildPortfolioList(),
     );
   }
 
   Widget _buildPortfolioList() {
     return _portfolio.isEmpty
-        ? const Center(child: Text('No portfolio data available'))
+        ? const Center(
+            child: Text('No stocks in portfolio. Go buy your first stock!'))
         : ListView.builder(
             shrinkWrap: true,
             itemCount: _portfolio.length,
