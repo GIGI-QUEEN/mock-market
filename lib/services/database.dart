@@ -28,20 +28,14 @@ class DatabaseService {
   // call to get the remaining balance
   Future<num> getBalance(User user) async {
     late num balance;
-    log('in getBalance1');
     try {
-      log('in getBalance2');
       DocumentSnapshot userSnapshot =
           await _database.collection('users').doc(user.uid).get();
 
       if (userSnapshot.exists) {
-        log('in userSnapshot');
         Map<String, dynamic> userData =
             userSnapshot.data() as Map<String, dynamic>;
-        // balance = userData['balance']?.toDouble() ?? 0.0;
         balance = userData['balance'] ?? 0.0;
-        log('balance: $balance');
-        log('uid: ${user.uid}');
         return balance;
       } else {
         // if document doesn't exist
@@ -136,8 +130,10 @@ class DatabaseService {
   }
 
   // remove stocks from portfolio
-  Future<void> removeFromPortfolio(User user, String stockName) async {
+  Future<void> removeFromPortfolio(
+      User user, String stockName, num amount) async {
     try {
+      log('in removeFromPortfolio');
       String currentUserUid = user.uid;
 
       DocumentReference portfolioRef = _database
@@ -146,7 +142,20 @@ class DatabaseService {
           .collection('portfolio')
           .doc(stockName);
 
-      await portfolioRef.delete();
+      DocumentSnapshot portfolioSnapshot = await portfolioRef.get();
+      if (portfolioSnapshot.exists) {
+        int existingAmount = portfolioSnapshot.get('amount') as int;
+
+        if (existingAmount > amount) {
+          await portfolioRef.update({
+            "amount": existingAmount - amount,
+          });
+        } else {
+          await portfolioRef.delete();
+        }
+      } else {
+        log('Stock $stockName not found in portfolio.');
+      }
     } catch (e) {
       log('Error in removeFromPortfolio function: $e');
       throw Exception(e);
@@ -156,33 +165,42 @@ class DatabaseService {
   // sell stocks, returns true if the transaction suceeded, false if not
   Future<bool> sell(
     User user,
-    int amount,
+    num amount,
     num rate,
     String stockName,
   ) async {
-    log('in sell');
     try {
+      log('in sell');
       String currentUserUid = user.uid;
       Timestamp timestamp = Timestamp.now();
       DateTime dateTime = timestamp.toDate();
       String formattedDate =
           DateFormat('MMM dd, yyyy, hh:mm:ss a').format(dateTime);
-      DocumentReference salesRef = _database
-          .collection('users')
-          .doc(currentUserUid)
-          .collection('sales')
-          .doc(formattedDate);
 
-      await salesRef.set({
-        "amount": amount,
-        "rate": rate,
-        "stockName": stockName,
-        "symbol": "USD",
-        "timestamp": formattedDate,
-      });
       num transactionSum = rate * amount;
-      setBalance(user, transactionSum);
-      return true;
+      Map<String, int> stocks = await getPortfolio(user);
+      if (stocks.containsKey(stockName) && stocks[stockName]! >= amount) {
+
+        DocumentReference salesRef = _database
+            .collection('users')
+            .doc(currentUserUid)
+            .collection('sales')
+            .doc(formattedDate);
+
+        await salesRef.set({
+          "amount": amount,
+          "rate": rate,
+          "stockName": stockName,
+          "symbol": "USD",
+          "timestamp": formattedDate,
+        });
+        setBalance(user, transactionSum);
+        await removeFromPortfolio(user, stockName, amount);
+        return true;
+      } else {
+        log('transaction failed');
+        return false;
+      }
     } catch (e) {
       log('Error in sell function: $e');
       throw Exception(e);

@@ -29,7 +29,7 @@ class WalletSummaryCard extends StatelessWidget {
           const SizedBox(
             height: 5,
           ),
-          Text('\$${formatNumber(accountModel.accountData!.balance)}',
+          Text('\$${formatNumber(accountModel.accountData?.balance ?? 0.0)}',
               style: GoogleFonts.openSans(
                 color: Colors.white,
                 fontWeight: FontWeight.w700,

@@ -9,13 +9,13 @@ import 'package:stock_market/services/database.dart';
 import 'package:stock_market/utils/utils.dart';
 import 'package:stock_market/components/numpad.dart';
 
-class BuyButton extends StatelessWidget {
+class SellButton extends StatelessWidget {
   final String stockSymbol;
   final double? stockPrice;
   late int amount;
   final DatabaseService _databaseService = DatabaseService();
 
-  BuyButton({
+  SellButton({
     Key? key,
     required this.stockSymbol,
     this.stockPrice,
@@ -39,7 +39,7 @@ class BuyButton extends StatelessWidget {
               onNumberSubmitted: (number) async {
                 amount = int.parse(number);
                 if (firebaseUser != null && stockPrice != null) {
-                  bool success = await _databaseService.buy(
+                  bool success = await _databaseService.sell(
                     firebaseUser,
                     amount,
                     stockPrice!,
@@ -66,7 +66,7 @@ class BuyButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(14.0),
         ),
         child: Text(
-          'Buy $company',
+          'Sell $company',
           style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
@@ -80,7 +80,7 @@ class BuyButton extends StatelessWidget {
     QuickAlert.show(
         context: context,
         type: QuickAlertType.success,
-        text: 'Acquired $amount $stockSymbol!',
+        text: 'Sold $amount $stockSymbol!',
         autoCloseDuration: const Duration(seconds: 3),
         confirmBtnText: 'Go to Portfolio',
         onConfirmBtnTap: () async {
@@ -94,7 +94,7 @@ class BuyButton extends StatelessWidget {
       context: context,
       type: QuickAlertType.error,
       title: 'Oops...',
-      text: 'Insufficient funds',
+      text: 'Transaction failed',
     );
   }
 }
