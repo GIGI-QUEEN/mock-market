@@ -10,19 +10,19 @@ import 'package:stock_market/services/database.dart';
 import 'package:stock_market/utils/utils.dart';
 import 'package:stock_market/components/numpad.dart';
 
-class BuyButton extends StatefulWidget {
+class SellButton extends StatefulWidget {
   final String stockSymbol;
 
-  const BuyButton({
+  const SellButton({
     Key? key,
     required this.stockSymbol,
   }) : super(key: key);
 
   @override
-  State<BuyButton> createState() => _BuyButtonState();
+  State<SellButton> createState() => _SellButtonState();
 }
 
-class _BuyButtonState extends State<BuyButton> {
+class _SellButtonState extends State<SellButton> {
   late int amount;
 
   final DatabaseService _databaseService = DatabaseService();
@@ -47,7 +47,7 @@ class _BuyButtonState extends State<BuyButton> {
               onNumberSubmitted: (number) async {
                 amount = int.parse(number);
                 if (firebaseUser != null && stock != null) {
-                  bool success = await _databaseService.buy(
+                  bool success = await _databaseService.sell(
                     firebaseUser,
                     amount,
                     stock.price,
@@ -74,7 +74,7 @@ class _BuyButtonState extends State<BuyButton> {
           borderRadius: BorderRadius.circular(14.0),
         ),
         child: Text(
-          'Buy $company',
+          'Sell $company',
           style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
@@ -88,7 +88,7 @@ class _BuyButtonState extends State<BuyButton> {
     QuickAlert.show(
         context: context,
         type: QuickAlertType.success,
-        text: 'Acquired $amount ${widget.stockSymbol}!',
+        text: 'Sold $amount ${widget.stockSymbol}!',
         autoCloseDuration: const Duration(seconds: 3),
         confirmBtnText: 'Go to Portfolio',
         onConfirmBtnTap: () async {
@@ -102,7 +102,7 @@ class _BuyButtonState extends State<BuyButton> {
       context: context,
       type: QuickAlertType.error,
       title: 'Oops...',
-      text: 'Insufficient funds',
+      text: 'Transaction failed',
     );
   }
 }

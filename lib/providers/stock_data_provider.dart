@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+
 import 'package:stock_market/constants/stock_list.dart';
 import 'package:stock_market/models/stock.dart';
 import 'package:stock_market/services/network.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 
 class StockDataProviderV2 extends ChangeNotifier {
   final Map<String, Stock> _stocksMap = {};
