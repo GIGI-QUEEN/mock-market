@@ -57,16 +57,12 @@ class _StockHistoricalViewState extends State<StockHistoricalView> {
                   buildToggleButton(),
                   buildChart(stocksMap),
                   buildButtons(),
-                  /* BuyButton(
+                   BuyButton(
                     stockSymbol: widget.stockSymbol,
-                    stockPrice: (stocksMap[widget.stockSymbol]?.price ?? 0.0)
-                        as double?,
-                  ), */
-                  SellButton(
-                    stockSymbol: widget.stockSymbol,
-                    stockPrice: (stocksMap[widget.stockSymbol]?.price ?? 0.0)
-                        as double,
                   ),
+                  /* SellButton(
+                    stockSymbol: widget.stockSymbol,
+                  ), */
                 ],
               ),
             ),

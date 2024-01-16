@@ -211,7 +211,7 @@ class DatabaseService {
   Future<bool> buy(
     User user,
     num amount,
-    double rate,
+    num rate,
     String stockName,
   ) async {
     try {
@@ -221,7 +221,7 @@ class DatabaseService {
       DateTime dateTime = timestamp.toDate();
       String formattedDate =
           DateFormat('MMM dd, yyyy, hh:mm:ss a').format(dateTime);
-      double transactionSum = rate * amount;
+      num transactionSum = rate * amount;
       num balance = await getBalance(user);
 
       if (balance >= transactionSum) {

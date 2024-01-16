@@ -5,26 +5,34 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
+import 'package:stock_market/providers/stock_data_provider.dart';
 import 'package:stock_market/services/database.dart';
 import 'package:stock_market/utils/utils.dart';
 import 'package:stock_market/components/numpad.dart';
 
-class SellButton extends StatelessWidget {
+class SellButton extends StatefulWidget {
   final String stockSymbol;
-  final double? stockPrice;
-  late int amount;
-  final DatabaseService _databaseService = DatabaseService();
 
-  SellButton({
+  const SellButton({
     Key? key,
     required this.stockSymbol,
-    this.stockPrice,
   }) : super(key: key);
+
+  @override
+  State<SellButton> createState() => _SellButtonState();
+}
+
+class _SellButtonState extends State<SellButton> {
+  late int amount;
+
+  final DatabaseService _databaseService = DatabaseService();
 
   @override
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User?>();
-    final String company = getCompanyName(stockSymbol);
+    final stockDataProvider = context.watch<StockDataProviderV2>();
+    final stock = stockDataProvider.stocksMap[widget.stockSymbol];
+    final String company = getCompanyName(widget.stockSymbol);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 5.0),
@@ -38,12 +46,12 @@ class SellButton extends StatelessWidget {
             builder: (context) => NumberInputView(
               onNumberSubmitted: (number) async {
                 amount = int.parse(number);
-                if (firebaseUser != null && stockPrice != null) {
+                if (firebaseUser != null && stock != null) {
                   bool success = await _databaseService.sell(
                     firebaseUser,
                     amount,
-                    stockPrice!,
-                    stockSymbol,
+                    stock.price,
+                    stock.symbol,
                   );
                   if (success) {
                     if (currentContext.mounted) {
@@ -80,7 +88,7 @@ class SellButton extends StatelessWidget {
     QuickAlert.show(
         context: context,
         type: QuickAlertType.success,
-        text: 'Sold $amount $stockSymbol!',
+        text: 'Sold $amount ${widget.stockSymbol}!',
         autoCloseDuration: const Duration(seconds: 3),
         confirmBtnText: 'Go to Portfolio',
         onConfirmBtnTap: () async {
