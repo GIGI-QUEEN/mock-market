@@ -3,6 +3,8 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stock_market/providers/account_provider.dart';
+import 'package:stock_market/utils/utils.dart';
 import '../services/database.dart';
 
 class WalletPage extends StatefulWidget {
@@ -13,34 +15,30 @@ class WalletPage extends StatefulWidget {
 }
 
 class WalletPageState extends State<WalletPage> {
-  final DatabaseService firebaseService = DatabaseService();
-  Map<String, int> _portfolio = {};
-
-  @override
-  void initState() {
-    super.initState();
-    _loadData();
-  }
-
-  Future<void> _loadData() async {
-    //final user = context.watch<User?>();
-    _portfolio = await firebaseService.getPortfolio();
-
-    log('portfolio: $_portfolio');
-    setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
+    //final accountModel = context.watch<AccountProvider>();
+    final accountModel = Provider.of<AccountProvider>(context);
+    accountModel.loadDataV2();
+    log('p: ${accountModel.portfolio}');
     return Scaffold(
       appBar: AppBar(
         title: const Text('Portfolio'),
       ),
-      body: _buildPortfolioList(),
+      body: PortfolioList(),
     );
   }
+}
 
-  Widget _buildPortfolioList() {
+class PortfolioList extends StatelessWidget {
+  const PortfolioList({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text('aaa');
+  }
+}
+/*  Widget _buildPortfolioList() {
     return _portfolio.isEmpty
         ? const Center(
             child: Text('No stocks in portfolio. Go buy your first stock!'))
@@ -56,5 +54,4 @@ class WalletPageState extends State<WalletPage> {
               );
             },
           );
-  }
-}
+  } */

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:stock_market/providers/stock_data_provider.dart';
 
 class NumberInputView extends StatefulWidget {
   final Function(String) onNumberSubmitted;

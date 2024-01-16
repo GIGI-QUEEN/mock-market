@@ -1,28 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:stock_market/components/stock_logo.dart';
 import 'package:stock_market/models/stock.dart';
+import 'package:stock_market/providers/stock_data_provider.dart';
 import 'package:stock_market/utils/utils.dart';
 import 'package:stock_market/views/historical.dart';
 
 class StockListView extends StatelessWidget {
-  const StockListView({super.key, required this.stocksMap});
-  final Map<String, Stock> stocksMap;
+  // const StockListView({super.key, required this.stocksMap});
+  const StockListView({super.key});
+
+  // final Map<String, Stock> stocksMap;
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      itemCount: stocksMap.length,
-      //itemCount: 2,
+    return ChangeNotifierProvider(
+      create: (context) => StockDataProviderV2(),
+      child: Consumer<StockDataProviderV2>(builder: (context, model, _) {
+        final stocksMap = model.stocksMap;
+        return ListView.separated(
+          itemCount: stocksMap.length,
+          //itemCount: 2,
 
-      itemBuilder: (context, index) {
-        final stock = stocksMap.values.elementAt(index);
-        // log(stock.toString());
-        return StockTile(stock: stock);
-      },
-      separatorBuilder: (BuildContext context, int index) {
-        return const SizedBox(
-          height: 10,
+          itemBuilder: (context, index) {
+            final stock = stocksMap.values.elementAt(index);
+            // log(stock.toString());
+            return StockTile(stock: stock);
+          },
+          separatorBuilder: (BuildContext context, int index) {
+            return const SizedBox(
+              height: 10,
+            );
+          },
         );
-      },
+      }),
     );
   }
 }

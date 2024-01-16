@@ -54,6 +54,13 @@ class _MainViewState extends State<MainView> {
                     _currentIndex == 2 ? Theme.of(context).primaryColor : null,
               ),
               label: 'settings'),
+          NavigationDestination(
+              icon: Icon(
+                Icons.telegram,
+                color:
+                    _currentIndex == 3 ? Theme.of(context).primaryColor : null,
+              ),
+              label: 'test'),
         ],
       ),
     );

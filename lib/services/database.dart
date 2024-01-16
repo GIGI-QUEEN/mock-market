@@ -1,15 +1,12 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:stock_market/models/user_account.dart';
 import 'package:intl/intl.dart';
 
 class DatabaseService {
   final _database = FirebaseFirestore.instance;
-  final _auth = FirebaseAuth.instance;
+  //final _auth = FirebaseAuth.instance;
 
   // call when adding new user, pass in emailcontroller text
   Future<void> addUser(User user) async {
@@ -80,11 +77,11 @@ class DatabaseService {
   }
 
   // call to get the portfolio
-  Future<Map<String, int>> getPortfolio() async {
+  Future<Map<String, int>> getPortfolio(User user) async {
     try {
       QuerySnapshot portfolioSnapshot = await _database
           .collection('users')
-          .doc(_auth.currentUser?.uid)
+          .doc(user.uid)
           .collection('portfolio')
           .get();
 

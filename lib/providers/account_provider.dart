@@ -1,8 +1,5 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:developer';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:stock_market/models/user_account.dart';
@@ -13,6 +10,22 @@ class AccountProvider extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final DatabaseService _databaseService = DatabaseService();
   UserAccountModel? accountData;
+  Map<String, int> _portfolio = {};
+  Map<String, int> get portfolio => _portfolio;
+  // NetworkService _networkService = NetworkService();
+
+  /* Future<void> loadData() async {
+    if (_auth.currentUser != null) {
+      _portfolio = await _databaseService.getPortfolio(_auth.currentUser!);
+    }
+    // log('portfolio: $_portfolio');
+  } */
+
+  Future<void> loadDataV2() async {
+    if (_auth.currentUser != null) {
+      _portfolio = await _databaseService.getPortfolio(_auth.currentUser!);
+    }
+  }
 
   void listenToAccountChanges() {
     if (_auth.currentUser != null) {
@@ -20,6 +33,8 @@ class AccountProvider extends ChangeNotifier {
           .listenToUserAccountData(_auth.currentUser!)
           .listen((event) {
         final data = event.data();
+        // _networkService.fetch20Stocks();
+
         if (data != null) {
           accountData = UserAccountModel.fromJson(data);
           notifyListeners();

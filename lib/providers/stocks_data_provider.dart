@@ -7,7 +7,7 @@ import '../models/stock.dart';
 
 class StocksProvider extends ChangeNotifier {
   Map<String, Stock> _stocksMap = {};
-  
+
   final StreamController<String> _priceUpdateController =
       StreamController<String>.broadcast();
 
@@ -29,7 +29,9 @@ class StocksProvider extends ChangeNotifier {
     }
   }
 
+  @override
   void dispose() {
+    super.dispose();
     _priceUpdateController.close();
   }
 }

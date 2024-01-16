@@ -8,15 +8,26 @@ import 'package:stock_market/models/stock.dart';
 import 'package:stock_market/services/network.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-class StocksDataProvider extends ChangeNotifier {
+class StockDataProviderV2 extends ChangeNotifier {
   final Map<String, Stock> _stocksMap = {};
   Map<String, Stock> get stocksMap => _stocksMap;
-
+  final NetworkService _networkService = NetworkService();
+  late StreamSubscription _streamSubscription;
   final channel = WebSocketChannel.connect(
     Uri.parse('wss://ws.finnhub.io?token=$token'),
   );
-  late StreamSubscription _streamSubscription;
-  //final Map<String, Stock> stocksMap = {};
+
+  void initialFetch() async {
+    for (var stockName in stockList) {
+      final initialPrice = await _networkService.fetchSymbol(stockName);
+      final preFetchedStock =
+          Stock(price: initialPrice, symbol: stockName, time: DateTime.now());
+      _stocksMap.update(stockName, (value) => preFetchedStock,
+          ifAbsent: () => preFetchedStock);
+      log(preFetchedStock.toString());
+      notifyListeners();
+    }
+  }
 
   getRealTimeStockData() {
     for (var stock in stockList) {
@@ -25,31 +36,24 @@ class StocksDataProvider extends ChangeNotifier {
     }
 
     _streamSubscription = channel.stream.listen((event) {
+      //log('event: $event');
       final data = jsonDecode(event);
       final stock = Stock.fromJson2(data);
-      _stocksMap.update(stock.symbol, (value) => stock, ifAbsent: () => stock);
+      stocksMap.update(stock.symbol, (value) => stock, ifAbsent: () => stock);
       notifyListeners();
-      /*  setState(() {
-        stocksMap.update(stock.symbol, (value) => stock, ifAbsent: () => stock);
-      }); */
     });
   }
 
-  closeStream() {
-    channel.sink.close();
+  StockDataProviderV2() {
+    initialFetch();
+    Future.delayed(const Duration(milliseconds: 300), getRealTimeStockData());
+    // getRealTimeStockData();
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
-    _streamSubscription.cancel();
-    closeStream();
     super.dispose();
+    _streamSubscription.cancel();
+    channel.sink.close();
   }
-
-  void updateStocksMap(Map<String, Stock> map) {}
-
-  /*  StocksDataProvider() {
-    getRealTimeStockData();
-  } */
 }

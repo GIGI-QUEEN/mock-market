@@ -1,6 +1,3 @@
-import 'dart:developer';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -13,7 +10,6 @@ class WalletSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accountModel = Provider.of<AccountProvider>(context);
-    final firebaseUser = context.watch<User?>();
     return Container(
       width: double.infinity,
       height: 200,
@@ -70,7 +66,7 @@ class WalletSummaryCard extends StatelessWidget {
           const SizedBox(
             height: 25,
           ),
-        Container(
+          Container(
             width: double.infinity,
             height: 40,
             padding: const EdgeInsets.symmetric(horizontal: 15),
