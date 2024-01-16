@@ -24,8 +24,8 @@ class StockDataProviderV2 extends ChangeNotifier {
           Stock(price: initialPrice, symbol: stockName, time: DateTime.now());
       _stocksMap.update(stockName, (value) => preFetchedStock,
           ifAbsent: () => preFetchedStock);
-      notifyListeners();
     }
+    notifyListeners();
   }
 
   getRealTimeStockData() {
@@ -37,17 +37,20 @@ class StockDataProviderV2 extends ChangeNotifier {
     _streamSubscription = channel.stream.listen((event) {
       //log('event: $event');
       final data = jsonDecode(event);
-      final stock = Stock.fromJson2(data);
+
+      if (data['data'][0] != null) {
+        final stock = Stock.fromJson2(data);
+        stocksMap.update(stock.symbol, (value) => stock, ifAbsent: () => stock);
+        notifyListeners();
+      }
       //log(stock.toString());
-      stocksMap.update(stock.symbol, (value) => stock, ifAbsent: () => stock);
-      notifyListeners();
     });
   }
 
   StockDataProviderV2() {
     initialFetch();
     Future.delayed(const Duration(milliseconds: 300), getRealTimeStockData());
-    // getRealTimeStockData();
+    //getRealTimeStockData();
   }
 
   @override

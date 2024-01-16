@@ -79,7 +79,10 @@ Widget handleSnapshotState(
   }
 }
 
-String formatNumber(num number) {
-  final formatter = NumberFormat("#,###.##");
-  return formatter.format(number);
+String formatNumber(num? number) {
+  if (number != null) {
+    final formatter = NumberFormat("#,###.##");
+    return formatter.format(number);
+  }
+  return '';
 }

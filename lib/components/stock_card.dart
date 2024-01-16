@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stock_market/components/stock_logo.dart';
 import 'package:stock_market/models/stock.dart';
+import 'package:stock_market/utils/utils.dart';
 
 class StockCard extends StatelessWidget {
   const StockCard({super.key, required this.stock});
@@ -15,7 +16,7 @@ class StockCard extends StatelessWidget {
       width: 150,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Color.fromARGB(255, 226, 226, 226)),
+        border: Border.all(color: const Color.fromARGB(255, 226, 226, 226)),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -28,11 +29,11 @@ class StockCard extends StatelessWidget {
                 mainContainerSize: 38,
                 imageContainerSize: 25,
                 mainContainerBorder:
-                    Border.all(color: Color.fromARGB(255, 226, 226, 226)),
+                    Border.all(color: const Color.fromARGB(255, 226, 226, 226)),
                 //  mainContainerBgColor: Color.fromARGB(127, 233, 233, 233),
               ),
               Text(
-                '\$3,200.80',
+                '\$${formatNumber(stock.totalValue)}',
                 style: GoogleFonts.openSans(fontWeight: FontWeight.bold),
               )
             ],

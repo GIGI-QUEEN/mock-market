@@ -2,11 +2,15 @@ class Stock {
   num price;
   final String symbol;
   final DateTime time;
+  final num? quantity;
+  final num? totalValue;
 
   Stock({
     required this.price,
     required this.symbol,
     required this.time,
+    this.quantity,
+    this.totalValue,
   });
 
   factory Stock.fromJson(Map<String, dynamic> json) {
@@ -29,5 +33,5 @@ class Stock {
 
   @override
   String toString() =>
-      'StockModel(symbol: $symbol, price: $price, time: $time)';
+      'StockModel(symbol: $symbol, price: $price, qty: $quantity, total value: $totalValue)';
 }

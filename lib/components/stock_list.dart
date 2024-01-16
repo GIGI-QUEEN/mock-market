@@ -7,10 +7,7 @@ import 'package:stock_market/utils/utils.dart';
 import 'package:stock_market/views/historical.dart';
 
 class StockListView extends StatelessWidget {
-  // const StockListView({super.key, required this.stocksMap});
   const StockListView({super.key});
-
-  // final Map<String, Stock> stocksMap;
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -20,10 +17,8 @@ class StockListView extends StatelessWidget {
         final itemCount = stocksMap.length >= 2 ? 2 : 0;
         return ListView.separated(
           itemCount: itemCount,
-          //itemCount: 2,
           itemBuilder: (context, index) {
             final stock = stocksMap.values.elementAt(index);
-            // log(stock.toString());
             return StockTile(stock: stock);
           },
           separatorBuilder: (BuildContext context, int index) {
@@ -77,6 +72,12 @@ class StockTile extends StatelessWidget {
             ),
           ],
         ),
+        trailing: stock.quantity != null && stock.totalValue != null
+            ? Column(children: [
+                Text('Qty: ${stock.quantity}'),
+                Text('\$${formatNumber(stock.totalValue!)}')
+              ])
+            : null,
       ),
     );
   }

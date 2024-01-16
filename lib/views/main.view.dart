@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stock_market/views/home.view.dart';
 import 'package:stock_market/views/settings.view.dart';
-import 'package:stock_market/views/wallet.dart';
+import 'package:stock_market/views/wallet/wallet.dart';
 
 class MainView extends StatefulWidget {
   const MainView({super.key});

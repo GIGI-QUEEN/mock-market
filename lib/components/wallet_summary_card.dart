@@ -9,7 +9,6 @@ class WalletSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accountModel = Provider.of<AccountProvider>(context);
     return Container(
       width: double.infinity,
       height: 200,
@@ -29,40 +28,17 @@ class WalletSummaryCard extends StatelessWidget {
           const SizedBox(
             height: 5,
           ),
-          Text('\$${formatNumber(accountModel.accountData!.balance)}',
-              style: GoogleFonts.openSans(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-                fontSize: 34,
-              )),
-          /*   FutureBuilder(
-              future: firebaseUser != null
-                  ? accountModel.getUserBalance(firebaseUser)
-                  : null,
-              builder: (context, snapshot) {
-                //   log('state: ${snapshot.connectionState.toString()}');
-                if (snapshot.hasData) {
-                  //log('data: ${snapshot.data.toString()}');
-                }
-                return handleSnapshotState(
-                    snapshot,
-                    Text(
-                      '\$${accountModel.balance}',
-                      style: GoogleFonts.openSans(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 34,
-                      ),
-                    ));
-                /*    return Text(
-                  '\$${accountModel.balance}',
+          ChangeNotifierProvider(
+            create: (context) => AccountProvider(),
+            child: Consumer<AccountProvider>(builder: (context, model, _) {
+              return Text('\$${formatNumber(model.accountData?.balance)}',
                   style: GoogleFonts.openSans(
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
                     fontSize: 34,
-                  ),
-                ); */
-              }), */
+                  ));
+            }),
+          ),
           const SizedBox(
             height: 25,
           ),

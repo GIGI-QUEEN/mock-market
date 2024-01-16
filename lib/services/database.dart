@@ -96,7 +96,7 @@ class DatabaseService {
           return {};
         }
       }
-      log('portfolioData: $portfolioData');
+      //log('portfolioData: $portfolioData');
       return portfolioData;
     } catch (e) {
       log('Error in getPortfolio function: $e');
