@@ -14,13 +14,6 @@ class AccountProvider extends ChangeNotifier {
   Map<String, int> get portfolio => _portfolio;
   // NetworkService _networkService = NetworkService();
 
-  /* Future<void> loadData() async {
-    if (_auth.currentUser != null) {
-      _portfolio = await _databaseService.getPortfolio(_auth.currentUser!);
-    }
-    // log('portfolio: $_portfolio');
-  } */
-
   Future<void> loadDataV2() async {
     if (_auth.currentUser != null) {
       _portfolio = await _databaseService.getPortfolio(_auth.currentUser!);

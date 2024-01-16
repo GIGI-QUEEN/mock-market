@@ -31,9 +31,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<StocksProvider>(
-          create: (context) => StocksProvider(),
-        ),
         ChangeNotifierProvider<AuthenticationProvider>(
           create: (_) => AuthenticationProvider(FirebaseAuth.instance),
         ),
@@ -52,7 +49,7 @@ class MyApp extends StatelessWidget {
           signUp: (context) => const SignupView(),
           authenticate: (context) => const Authenticate(),
           wallet: (context) => const WalletPage(),
-          home: (context) => HomeView(),
+          home: (context) => const HomeView(),
         },
         home: FutureBuilder(
             future: _fbApp,

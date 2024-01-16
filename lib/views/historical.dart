@@ -1,14 +1,12 @@
 import 'dart:async';
-import 'dart:developer';
-
 import 'package:provider/provider.dart';
-import 'package:stock_market/components/buy_button.dart';
-import 'package:stock_market/models/stock.dart';
-import 'package:stock_market/providers/stocks_data_provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:flutter/material.dart';
 
-import '../services/network.dart';
+import 'package:stock_market/services/network.dart';
+import 'package:stock_market/components/buy_button.dart';
+import 'package:stock_market/models/stock.dart';
+import 'package:stock_market/providers/stock_data_provider.dart';
 
 class StockHistoricalView extends StatefulWidget {
   final String stockSymbol;
@@ -20,7 +18,6 @@ class StockHistoricalView extends StatefulWidget {
 }
 
 class _StockHistoricalViewState extends State<StockHistoricalView> {
-  late StreamSubscription<String> _priceUpdateSubscription;
   final networkService = NetworkService();
   late List<ChartSampleData> _chartData = [];
   late TrackballBehavior _trackballBehavior;
@@ -31,19 +28,7 @@ class _StockHistoricalViewState extends State<StockHistoricalView> {
   @override
   void initState() {
     super.initState();
-    _priceUpdateSubscription =
-        Provider.of<StocksProvider>(context, listen: false)
-            .priceUpdateStream
-            .where((symbol) => symbol == widget.stockSymbol)
-            .listen((symbol) {});
-
     fetchChartData();
-  }
-
-  @override
-  void dispose() {
-    _priceUpdateSubscription.cancel();
-    super.dispose();
   }
 
   void fetchChartData() async {
@@ -86,35 +71,27 @@ class _StockHistoricalViewState extends State<StockHistoricalView> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: Column(
-          children: [
-            const SizedBox(
-              height: 50.0,
+    return ChangeNotifierProvider(
+      create: (context) => StockDataProviderV2(),
+      child: Consumer<StockDataProviderV2>(
+        builder: (context, model, _) {
+          final stocksMap = model.stocksMap;
+          return SafeArea(
+            child: Scaffold(
+              body: Column(
+                children: [
+                  const SizedBox(
+                    height: 30.0,
+                  ),
+                  buildToggleButton(),
+                  buildChart(stocksMap),
+                  buildButtons(),
+                  BuyButton(stockSymbol: widget.stockSymbol),
+                ],
+              ),
             ),
-            buildToggleButton(),
-            // buildChart(stocksMap),
-            StreamBuilder<String>(
-              stream: Provider.of<StocksProvider>(context, listen: false)
-                  .priceUpdateStream,
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                }
-
-                if (snapshot.hasData && snapshot.data == widget.stockSymbol) {
-                  fetchDataForDuration(_currentDuration);
-                }
-                return buildChart(
-                    Provider.of<StocksProvider>(context, listen: false)
-                        .stocksMap);
-              },
-            ),
-            buildButtons(),
-            BuyButton(stockSymbol: widget.stockSymbol),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -123,7 +100,6 @@ class _StockHistoricalViewState extends State<StockHistoricalView> {
     if (stocksMap.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
-    // log(stocksMap['AAPL']!.price.toString());
 
     return _chartData.isNotEmpty
         ? _showCandlestickChart
@@ -132,7 +108,6 @@ class _StockHistoricalViewState extends State<StockHistoricalView> {
                   text:
                       "${widget.stockSymbol} - \$${stocksMap[widget.stockSymbol]?.price ?? 0.0}",
                 ),
-                // title: ChartTitle(text: widget.stockSymbol /* real time price*/),
                 trackballBehavior: _trackballBehavior,
                 series: <CandleSeries>[
                   CandleSeries<ChartSampleData, DateTime>(
@@ -152,9 +127,6 @@ class _StockHistoricalViewState extends State<StockHistoricalView> {
                 ),
                 primaryYAxis: const NumericAxis(
                   isVisible: false,
-                  /* majorGridLines: MajorGridLines(width: 0),
-                  edgeLabelPlacement: EdgeLabelPlacement.hide,
-                  labelStyle: TextStyle(color: Colors.transparent), */
                 ),
               )
             : SfCartesianChart(
@@ -178,10 +150,6 @@ class _StockHistoricalViewState extends State<StockHistoricalView> {
                 ),
                 primaryYAxis: const NumericAxis(
                   isVisible: false,
-                  /*  majorGridLines:
-                      MajorGridLines(width: 0, color: Colors.transparent),
-                  labelStyle: TextStyle(color: Colors.transparent),
-                  minorGridLines: MinorGridLines(color: Colors.transparent), */
                 ),
               )
         : const Center(child: CircularProgressIndicator());
@@ -207,6 +175,7 @@ class _StockHistoricalViewState extends State<StockHistoricalView> {
         buildButton("3M", "3m"),
         buildButton("6M", "6m"),
         buildButton("1Y", "1y"),
+        buildButton("All", "60y"),
       ],
     );
   }
