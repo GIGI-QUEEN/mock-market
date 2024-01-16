@@ -17,10 +17,10 @@ class StockListView extends StatelessWidget {
       create: (context) => StockDataProviderV2(),
       child: Consumer<StockDataProviderV2>(builder: (context, model, _) {
         final stocksMap = model.stocksMap;
+        final itemCount = stocksMap.length >= 2 ? 2 : 0;
         return ListView.separated(
-          itemCount: stocksMap.length,
+          itemCount: itemCount,
           //itemCount: 2,
-
           itemBuilder: (context, index) {
             final stock = stocksMap.values.elementAt(index);
             // log(stock.toString());

@@ -24,7 +24,6 @@ class StockDataProviderV2 extends ChangeNotifier {
           Stock(price: initialPrice, symbol: stockName, time: DateTime.now());
       _stocksMap.update(stockName, (value) => preFetchedStock,
           ifAbsent: () => preFetchedStock);
-      log(preFetchedStock.toString());
       notifyListeners();
     }
   }
@@ -39,6 +38,7 @@ class StockDataProviderV2 extends ChangeNotifier {
       //log('event: $event');
       final data = jsonDecode(event);
       final stock = Stock.fromJson2(data);
+      //log(stock.toString());
       stocksMap.update(stock.symbol, (value) => stock, ifAbsent: () => stock);
       notifyListeners();
     });
