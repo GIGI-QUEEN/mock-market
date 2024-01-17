@@ -20,13 +20,28 @@ class MiniGraph extends StatelessWidget {
       width: 200,
       child: SfCartesianChart(
         plotAreaBorderWidth: 0,
-        series: <LineSeries>[
+        series: <CartesianSeries>[
           LineSeries<ChartSampleData, DateTime>(
             animationDuration: 0,
             dataSource: chartData,
             xValueMapper: (ChartSampleData sales, _) => sales.x,
             yValueMapper: (ChartSampleData sales, _) => sales.close,
             color: percentChange! < 0 ? Colors.red : const Color(0xFF22CC9E),
+          ),
+          AreaSeries<ChartSampleData, DateTime>(
+            gradient: LinearGradient(
+                colors: <Color>[
+                  percentChange! < 0
+                      ? const Color.fromARGB(1, 233, 210, 210)
+                      : const Color.fromARGB(6, 194, 236, 225),
+                  Colors.white
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter),
+            animationDuration: 0,
+            dataSource: chartData,
+            xValueMapper: (ChartSampleData sales, _) => sales.x,
+            yValueMapper: (ChartSampleData sales, _) => sales.close,
           )
         ],
         primaryXAxis: const DateTimeAxis(
