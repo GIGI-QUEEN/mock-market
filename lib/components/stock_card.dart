@@ -1,16 +1,26 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:stock_market/components/minigraph.dart';
 import 'package:stock_market/components/stock_logo.dart';
 import 'package:stock_market/models/stock.dart';
+import 'package:stock_market/services/charts.dart';
 import 'package:stock_market/utils/utils.dart';
+import 'package:stock_market/views/historical.dart';
 
 class StockCard extends StatelessWidget {
-  const StockCard({super.key, required this.stock});
+  StockCard({
+    super.key,
+    required this.stock,
+  });
 
   final Stock stock;
+  late Future<List<ChartSampleData>> _chartData;
 
   @override
   Widget build(BuildContext context) {
+    _chartData = fetchGraphData(stock.symbol, "7d");
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
       width: 150,
@@ -35,8 +45,23 @@ class StockCard extends StatelessWidget {
               Text(
                 '\$${formatNumber(stock.totalValue)}',
                 style: GoogleFonts.openSans(fontWeight: FontWeight.bold),
-              )
+              ),
             ],
+          ),
+          Expanded(
+            child: FutureBuilder<List<ChartSampleData>>(
+              future: _chartData,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return MiniGraph(chartData: snapshot.data!, growth: -1); // todo: pass the correct argument: 1 for positive, -1 for negative
+                } else if (snapshot.hasError) {
+                  log('error');
+                  return Text('Error fetching chart data: ${snapshot.error}');
+                } else {
+                  return const CircularProgressIndicator(); // todo: skeleton?
+                }
+              },
+            ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -59,5 +84,11 @@ class StockCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<List<ChartSampleData>> fetchGraphData(
+      String stockSymbol, String duration) async {
+    _chartData = getChartData(stockSymbol, duration);
+    return _chartData;
   }
 }
