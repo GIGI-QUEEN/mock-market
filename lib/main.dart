@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:stock_market/components/centered_circular_progress_indicator.dart';
 import 'package:stock_market/firebase_options.dart';
 import 'package:stock_market/providers/auth_provider.dart';
+import 'package:stock_market/providers/navigation_provider.dart';
 import 'package:stock_market/theme.dart';
 import 'package:stock_market/views/auth/authenticate.view.dart';
 import 'package:stock_market/views/auth/login.view.dart';
@@ -36,6 +37,9 @@ class MyApp extends StatelessWidget {
           create: (context) => context.read<AuthenticationProvider>().authState,
           initialData: null,
         ),
+        ChangeNotifierProvider(
+          create: (context) => NavigationProvider(),
+        )
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

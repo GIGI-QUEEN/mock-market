@@ -6,8 +6,8 @@ ThemeData lightTheme = ThemeData(
       .apply(bodyColor: const Color.fromARGB(255, 0, 0, 0)),
   colorScheme: ColorScheme.fromSeed(
     background: Colors.white,
-    seedColor: Color.fromARGB(255, 33, 204, 158),
-    primary: Color.fromARGB(255, 33, 204, 158),
+    seedColor: const Color.fromARGB(255, 33, 204, 158),
+    primary: const Color.fromARGB(255, 33, 204, 158),
     tertiary: Colors.white,
     // brightness: Brightness.light,
   ),

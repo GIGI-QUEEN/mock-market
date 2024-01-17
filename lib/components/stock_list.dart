@@ -8,12 +8,40 @@ import 'package:stock_market/providers/stock_data_provider.dart';
 import 'package:stock_market/utils/utils.dart';
 import 'package:stock_market/views/historical.dart';
 
-final Map<String, Stock> fakeStockMap = {
-  'stock1': Stock.fakeStock(),
-  'stock2': Stock.fakeStock(),
-};
-
 class StockListView extends StatelessWidget {
+  const StockListView({
+    super.key,
+    required this.itemCount,
+    required this.stocksMap,
+    required this.isLoading,
+  });
+  final int itemCount;
+  final Map<String, Stock> stocksMap;
+  final bool isLoading;
+  @override
+  Widget build(BuildContext context) {
+    /* final stocksMap = model.isLoading ? fakeStockMap : model.stocksMap;
+      final itemCount = stocksMap.length >= 2 ? 2 : 0; */
+
+    return Skeletonizer(
+      enabled: isLoading,
+      child: ListView.separated(
+        itemCount: itemCount,
+        itemBuilder: (context, index) {
+          final stock = stocksMap.values.elementAt(index);
+          return StockTile(stock: stock);
+        },
+        separatorBuilder: (BuildContext context, int index) {
+          return const SizedBox(
+            height: 10,
+          );
+        },
+      ),
+    );
+  }
+}
+
+/* class StockListView extends StatelessWidget {
   const StockListView({super.key});
   @override
   Widget build(BuildContext context) {
@@ -41,7 +69,7 @@ class StockListView extends StatelessWidget {
       }),
     );
   }
-}
+} */
 
 class StockTile extends StatelessWidget {
   const StockTile({super.key, required this.stock});
@@ -51,7 +79,8 @@ class StockTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 240, 240, 240),
+        // color: Color.fromARGB(255, 250, 250, 250),
+        color: Color.fromRGBO(245, 245, 245, 0.9),
         borderRadius: BorderRadius.circular(20),
       ),
       child: ListTile(

@@ -9,7 +9,11 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:stock_market/components/stock_card.dart';
 import 'package:stock_market/components/stock_list.dart';
 import 'package:stock_market/components/wallet_summary_card.dart';
+import 'package:stock_market/constants/fake_stocks_map.dart';
+import 'package:stock_market/constants/routes_names.dart';
 import 'package:stock_market/providers/account_provider.dart';
+import 'package:stock_market/providers/navigation_provider.dart';
+import 'package:stock_market/providers/stock_data_provider.dart';
 
 final String? token = dotenv.env['FINNHUB_TOKEN'];
 
@@ -24,7 +28,7 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User?>();
-
+    final navigationModel = Provider.of<NavigationProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -37,14 +41,16 @@ class _HomeViewState extends State<HomeView> {
         child: Column(
           children: [
             const WalletSummaryCard(),
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const Text(
                   'My Portfolio',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                SeeAllButton(),
+                SeeAllButton(
+                  onPressed: () => navigationModel.changeView(wallet),
+                ),
               ],
             ),
             Expanded(
@@ -72,20 +78,37 @@ class _HomeViewState extends State<HomeView> {
                 }),
               ),
             ),
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const Text(
                   'Popular',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                SeeAllButton(),
+                SeeAllButton(
+                  onPressed: () => navigationModel.changeView(markets),
+                ),
               ],
             ),
             const SizedBox(
               height: 5,
             ),
-            const Expanded(child: StockListView()),
+            ChangeNotifierProvider(
+              create: (context) => StockDataProviderV2(),
+              child:
+                  Consumer<StockDataProviderV2>(builder: (context, model, _) {
+                final stocksMap =
+                    model.isLoading ? fakeStockMap : model.stocksMap;
+                final itemCount = stocksMap.length >= 2 ? 2 : 0;
+                return Expanded(
+                  child: StockListView(
+                      itemCount: itemCount,
+                      stocksMap: stocksMap,
+                      isLoading: model.isLoading),
+                );
+              }),
+            )
+            // const Expanded(child: StockListView()),
           ],
         ),
       ),

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 class SeeAllButton extends StatelessWidget {
-  const SeeAllButton({super.key});
-
+  const SeeAllButton({super.key, this.onPressed});
+  final Function()? onPressed;
   @override
   Widget build(BuildContext context) {
     return TextButton(
-        onPressed: () {},
+        onPressed: onPressed,
         child: Text(
           'See all',
           style: TextStyle(

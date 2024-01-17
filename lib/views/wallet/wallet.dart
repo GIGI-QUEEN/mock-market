@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:stock_market/components/stock_list.dart';
+import 'package:stock_market/constants/fake_stocks_map.dart';
 import 'package:stock_market/providers/account_provider.dart';
 
 class WalletPage extends StatefulWidget {
