@@ -33,6 +33,17 @@ class Stock {
     );
   }
 
+  factory Stock.fakeStock() {
+    return Stock(
+      price: 0,
+      symbol: 'AAPL',
+      time: DateTime.now(),
+      quantity: 0,
+      totalValue: 0,
+      percentChange: 0,
+    );
+  }
+
   @override
   String toString() =>
       'StockModel(symbol: $symbol, price: $price, qty: $quantity, total value: $totalValue)';

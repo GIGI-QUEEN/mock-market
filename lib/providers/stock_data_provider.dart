@@ -17,8 +17,13 @@ class StockDataProviderV2 extends ChangeNotifier {
     Uri.parse('wss://ws.finnhub.io?token=$token'),
   );
   bool _isDisposed = false;
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
 
   void _initialFetch() async {
+    _isLoading = true;
+    notifyListeners();
+
     if (_isDisposed) return;
     for (var stockName in stockList) {
       //final initialPrice = await _networkService.fetchSymbol(stockName);
@@ -39,6 +44,7 @@ class StockDataProviderV2 extends ChangeNotifier {
           ifAbsent: () => preFetchedStock);
     }
     if (_isDisposed) return;
+    _isLoading = false;
     notifyListeners();
   }
 
@@ -71,6 +77,7 @@ class StockDataProviderV2 extends ChangeNotifier {
   @override
   void dispose() {
     _isDisposed = true;
+    _isLoading = false;
     super.dispose();
     _streamSubscription.cancel();
     channel.sink.close();

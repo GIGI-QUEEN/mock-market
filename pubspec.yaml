@@ -23,6 +23,7 @@ dependencies:
   syncfusion_flutter_charts: ^24.1.45+1
   intl: ^0.18.1
   quickalert: ^1.0.2
+  skeletonizer: ^1.0.1
 
 dev_dependencies:
   flutter_test:
