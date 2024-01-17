@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:provider/provider.dart';
 import 'package:stock_market/components/sell_button.dart';
+import 'package:stock_market/services/charts.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:flutter/material.dart';
 
@@ -179,13 +180,13 @@ class _StockHistoricalViewState extends State<StockHistoricalView> {
     }).toList();
   }
 
-  Future<List<ChartSampleData>> getChartData(
+ /*  Future<List<ChartSampleData>> getChartData(
       String stockName, String period) async {
     List<Map<String, dynamic>> jsonDataList =
         await networkService.fetchHistoricalStockData(stockName, period)
             as List<Map<String, dynamic>>;
     return parseChartDataFromJson(jsonDataList);
-  }
+  } */
 }
 
 class ChartSampleData {
