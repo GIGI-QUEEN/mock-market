@@ -16,15 +16,19 @@ class StockDataProviderV2 extends ChangeNotifier {
   final channel = WebSocketChannel.connect(
     Uri.parse('wss://ws.finnhub.io?token=$token'),
   );
+  bool _isDisposed = false;
 
-  void initialFetch() async {
+  void _initialFetch() async {
+    if (_isDisposed) return;
     for (var stockName in stockList) {
       final initialPrice = await _networkService.fetchSymbol(stockName);
+      if (_isDisposed) return;
       final preFetchedStock =
           Stock(price: initialPrice, symbol: stockName, time: DateTime.now());
       _stocksMap.update(stockName, (value) => preFetchedStock,
           ifAbsent: () => preFetchedStock);
     }
+    if (_isDisposed) return;
     notifyListeners();
   }
 
@@ -48,13 +52,13 @@ class StockDataProviderV2 extends ChangeNotifier {
   }
 
   StockDataProviderV2() {
-    initialFetch();
+    _initialFetch();
     Future.delayed(const Duration(milliseconds: 300), getRealTimeStockData());
-    //getRealTimeStockData();
   }
 
   @override
   void dispose() {
+    _isDisposed = true;
     super.dispose();
     _streamSubscription.cancel();
     channel.sink.close();

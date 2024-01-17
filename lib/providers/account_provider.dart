@@ -17,7 +17,7 @@ class AccountProvider extends ChangeNotifier {
   final NetworkService _networkService = NetworkService();
   final Map<String, Stock> _userStocksMap = {};
   Map<String, Stock> get userStocksMap => _userStocksMap;
-
+  bool _isDisposed = false;
   /*  Future<void> loadDataV2() async {
     if (_auth.currentUser != null) {
       _portfolio = await _databaseService.getPortfolio(_auth.currentUser!);
@@ -34,6 +34,7 @@ class AccountProvider extends ChangeNotifier {
 
         if (data != null) {
           accountData = UserAccountModel.fromJson(data);
+
           notifyListeners();
         }
       });
@@ -41,9 +42,13 @@ class AccountProvider extends ChangeNotifier {
   }
 
   void getUserStocksData() async {
+    if (_isDisposed) return;
+
     _portfolio = await _databaseService.getPortfolio(_auth.currentUser!);
 
     for (var entry in _portfolio.entries) {
+      if (_isDisposed) return;
+
       final stockPrice = await _networkService.fetchSymbol(entry.key);
       final symbol = entry.key;
       final qty = entry.value;
@@ -58,12 +63,21 @@ class AccountProvider extends ChangeNotifier {
           ifAbsent: () => userStock);
       //log('user stock: $userStock');
     }
-    log('user stocks: $userStocksMap');
+    //log('user stocks: $userStocksMap');
+    if (_isDisposed) return;
+
     notifyListeners();
   }
 
   AccountProvider() {
     getUserStocksData();
     listenToAccountChanges();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _isDisposed = true;
+    super.dispose();
   }
 }
