@@ -33,6 +33,25 @@ class NetworkService {
     }
   }
 
+  Future<Map<String, num>> fetchSymbolV2(String symbol) async {
+    final Map<String, num> priceMap = {
+      'currentPrice': 0,
+      'percentChange': 0,
+    };
+    var url = Uri.parse(
+        'https://finnhub.io/api/v1/quote?symbol=$symbol&token=$token');
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final jsonData = jsonDecode(response.body);
+      priceMap.update('currentPrice', (value) => jsonData['c'] as num);
+      priceMap.update('percentChange', (value) => jsonData['dp'] as num);
+      return priceMap;
+      //return jsonData['c'] as num;
+    } else {
+      return priceMap;
+    }
+  }
+
   Future<num> fetchSymbol(String symbol) async {
     var url = Uri.parse(
         'https://finnhub.io/api/v1/quote?symbol=$symbol&token=$token');

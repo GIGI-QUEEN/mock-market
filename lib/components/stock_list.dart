@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stock_market/components/stock_card.dart';
 import 'package:stock_market/components/stock_logo.dart';
 import 'package:stock_market/models/stock.dart';
 import 'package:stock_market/providers/stock_data_provider.dart';
@@ -77,7 +78,13 @@ class StockTile extends StatelessWidget {
                 Text('Qty: ${stock.quantity}'),
                 Text('\$${formatNumber(stock.totalValue!)}')
               ])
-            : null,
+            : Container(
+                // padding: EdgeInsets.all(5),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [Text(stock.symbol), PercentChange(stock: stock)],
+                ),
+              ),
       ),
     );
   }

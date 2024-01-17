@@ -49,6 +49,37 @@ class AccountProvider extends ChangeNotifier {
     for (var entry in _portfolio.entries) {
       if (_isDisposed) return;
 
+      final stockPrice = await _networkService.fetchSymbolV2(entry.key);
+      final symbol = entry.key;
+      final qty = entry.value;
+      final currentPrice = stockPrice['currentPrice'];
+      final percentChange = stockPrice['percentChange'];
+      final userStock = Stock(
+        price: currentPrice!,
+        symbol: symbol,
+        time: DateTime.now(),
+        quantity: qty,
+        totalValue: currentPrice * qty,
+        percentChange: percentChange,
+      );
+      userStocksMap.update(userStock.symbol, (value) => userStock,
+          ifAbsent: () => userStock);
+      //log('user stock: $userStock');
+    }
+    //log('user stocks: $userStocksMap');
+    if (_isDisposed) return;
+
+    notifyListeners();
+  }
+
+/*   void getUserStocksData() async {
+    if (_isDisposed) return;
+
+    _portfolio = await _databaseService.getPortfolio(_auth.currentUser!);
+
+    for (var entry in _portfolio.entries) {
+      if (_isDisposed) return;
+
       final stockPrice = await _networkService.fetchSymbol(entry.key);
       final symbol = entry.key;
       final qty = entry.value;
@@ -67,7 +98,7 @@ class AccountProvider extends ChangeNotifier {
     if (_isDisposed) return;
 
     notifyListeners();
-  }
+  } */
 
   AccountProvider() {
     getUserStocksData();

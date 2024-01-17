@@ -47,16 +47,32 @@ class StockCard extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              Text(
-                '+0.66%',
-                style: GoogleFonts.openSans(
-                  color: Theme.of(context).primaryColor,
-                  fontWeight: FontWeight.w600,
-                ),
-              )
+              PercentChange(stock: stock),
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class PercentChange extends StatelessWidget {
+  const PercentChange({
+    super.key,
+    required this.stock,
+  });
+
+  final Stock stock;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      '${formatNumber(stock.percentChange)}%',
+      style: GoogleFonts.openSans(
+        color: stock.percentChange! >= 0
+            ? Theme.of(context).primaryColor
+            : Colors.red,
+        fontWeight: FontWeight.w600,
       ),
     );
   }

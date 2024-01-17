@@ -21,10 +21,20 @@ class StockDataProviderV2 extends ChangeNotifier {
   void _initialFetch() async {
     if (_isDisposed) return;
     for (var stockName in stockList) {
-      final initialPrice = await _networkService.fetchSymbol(stockName);
+      //final initialPrice = await _networkService.fetchSymbol(stockName);
+      final initialStockPriceData =
+          await _networkService.fetchSymbolV2(stockName);
+      final price = initialStockPriceData['currentPrice'];
+      final percentChange = initialStockPriceData['percentChange'];
       if (_isDisposed) return;
-      final preFetchedStock =
-          Stock(price: initialPrice, symbol: stockName, time: DateTime.now());
+      final preFetchedStock = Stock(
+        price: price!,
+        symbol: stockName,
+        time: DateTime.now(),
+        percentChange: percentChange,
+      );
+      /* final preFetchedStock =
+          Stock(price: initialPrice, symbol: stockName, time: DateTime.now()); */
       _stocksMap.update(stockName, (value) => preFetchedStock,
           ifAbsent: () => preFetchedStock);
     }
@@ -42,8 +52,10 @@ class StockDataProviderV2 extends ChangeNotifier {
       //log('event: $event');
       final data = jsonDecode(event);
 
-      if (data['data'][0] != null) {
+      if (data['type'] != 'ping') {
         final stock = Stock.fromJson2(data);
+        final percentChange = stocksMap[stock.symbol]?.percentChange;
+        stock.percentChange = percentChange;
         stocksMap.update(stock.symbol, (value) => stock, ifAbsent: () => stock);
         notifyListeners();
       }

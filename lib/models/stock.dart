@@ -4,6 +4,7 @@ class Stock {
   final DateTime time;
   final num? quantity;
   final num? totalValue;
+  num? percentChange;
 
   Stock({
     required this.price,
@@ -11,6 +12,7 @@ class Stock {
     required this.time,
     this.quantity,
     this.totalValue,
+    this.percentChange,
   });
 
   factory Stock.fromJson(Map<String, dynamic> json) {
