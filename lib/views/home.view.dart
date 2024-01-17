@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:stock_market/components/see_all_button.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:stock_market/components/stock_card.dart';
@@ -48,18 +51,23 @@ class _HomeViewState extends State<HomeView> {
               child: ChangeNotifierProvider(
                 create: (context) => AccountProvider(),
                 child: Consumer<AccountProvider>(builder: (context, model, _) {
-                  return ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) {
-                      final stock =
-                          model.userStocksMap.entries.elementAt(index).value;
+                  final stocksMap =
+                      model.isLoading ? fakeStockMap : model.userStocksMap;
 
-                      return StockCard(stock: stock);
-                    },
-                    separatorBuilder: (_, index) => const SizedBox(
-                      width: 20,
+                  return Skeletonizer(
+                    enabled: model.isLoading,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) {
+                        final stock = stocksMap.entries.elementAt(index).value;
+
+                        return StockCard(stock: stock);
+                      },
+                      separatorBuilder: (_, index) => const SizedBox(
+                        width: 20,
+                      ),
+                      itemCount: stocksMap.length,
                     ),
-                    itemCount: model.userStocksMap.length,
                   );
                 }),
               ),

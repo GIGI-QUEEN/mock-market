@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:stock_market/components/stock_card.dart';
 import 'package:stock_market/components/stock_logo.dart';
 import 'package:stock_market/models/stock.dart';
 import 'package:stock_market/providers/stock_data_provider.dart';
 import 'package:stock_market/utils/utils.dart';
 import 'package:stock_market/views/historical.dart';
+
+final Map<String, Stock> fakeStockMap = {
+  'stock1': Stock.fakeStock(),
+  'stock2': Stock.fakeStock(),
+};
 
 class StockListView extends StatelessWidget {
   const StockListView({super.key});
@@ -14,19 +20,23 @@ class StockListView extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => StockDataProviderV2(),
       child: Consumer<StockDataProviderV2>(builder: (context, model, _) {
-        final stocksMap = model.stocksMap;
+        final stocksMap = model.isLoading ? fakeStockMap : model.stocksMap;
         final itemCount = stocksMap.length >= 2 ? 2 : 0;
-        return ListView.separated(
-          itemCount: itemCount,
-          itemBuilder: (context, index) {
-            final stock = stocksMap.values.elementAt(index);
-            return StockTile(stock: stock);
-          },
-          separatorBuilder: (BuildContext context, int index) {
-            return const SizedBox(
-              height: 10,
-            );
-          },
+
+        return Skeletonizer(
+          enabled: model.isLoading,
+          child: ListView.separated(
+            itemCount: itemCount,
+            itemBuilder: (context, index) {
+              final stock = stocksMap.values.elementAt(index);
+              return StockTile(stock: stock);
+            },
+            separatorBuilder: (BuildContext context, int index) {
+              return const SizedBox(
+                height: 10,
+              );
+            },
+          ),
         );
       }),
     );
@@ -74,7 +84,7 @@ class StockTile extends StatelessWidget {
           ],
         ),
         trailing: stock.quantity != null && stock.totalValue != null
-            ? Column(children: [
+            ? Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                 Text('Qty: ${stock.quantity}'),
                 Text('\$${formatNumber(stock.totalValue!)}')
               ])
