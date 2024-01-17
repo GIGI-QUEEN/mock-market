@@ -20,7 +20,7 @@ class StockCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    _chartData = fetchGraphData(stock.symbol, "7d");
+    _chartData = fetchGraphData(stock.symbol, "60d");
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
       width: 150,
@@ -53,7 +53,10 @@ class StockCard extends StatelessWidget {
               future: _chartData,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  return MiniGraph(chartData: snapshot.data!, growth: -1); // todo: pass the correct argument: 1 for positive, -1 for negative
+                  return MiniGraph(
+                    chartData: snapshot.data!,
+                    percentChange: stock.percentChange,
+                  );
                 } else if (snapshot.hasError) {
                   log('error');
                   return Text('Error fetching chart data: ${snapshot.error}');

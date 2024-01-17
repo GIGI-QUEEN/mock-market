@@ -4,12 +4,12 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 
 class MiniGraph extends StatelessWidget {
   final List<ChartSampleData> chartData;
-  final int growth;
+  num? percentChange;
 
-  const MiniGraph({
+  MiniGraph({
     super.key,
     required this.chartData,
-    required this.growth,
+    this.percentChange,
   });
 
   @override
@@ -19,13 +19,14 @@ class MiniGraph extends StatelessWidget {
       height: 80,
       width: 200,
       child: SfCartesianChart(
+        plotAreaBorderWidth: 0,
         series: <LineSeries>[
           LineSeries<ChartSampleData, DateTime>(
             animationDuration: 0,
             dataSource: chartData,
             xValueMapper: (ChartSampleData sales, _) => sales.x,
             yValueMapper: (ChartSampleData sales, _) => sales.close,
-            color: growth > 0 ? const Color(0xFF22CC9E) : Colors.red,
+            color: percentChange! < 0 ? Colors.red : const Color(0xFF22CC9E),
           )
         ],
         primaryXAxis: const DateTimeAxis(

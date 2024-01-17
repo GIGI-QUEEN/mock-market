@@ -6,14 +6,12 @@ import 'package:intl/intl.dart';
 
 class DatabaseService {
   final _database = FirebaseFirestore.instance;
-  //final _auth = FirebaseAuth.instance;
 
   // call when adding new user, pass in emailcontroller text
   Future<void> addUser(User user) async {
     try {
       DocumentReference userRef = _database.collection('users').doc(user.uid);
-      // String uid = userRef.id;
-
+      
       await userRef.set({
         "uid": user.uid,
         "email": user.email,
@@ -57,9 +55,7 @@ class DatabaseService {
       await _database.runTransaction((transaction) async {
         log('in runTransaction');
         DocumentSnapshot snapshot = await transaction.get(userRef);
-        //num currentBalance = snapshot['balance']?.toDouble() ?? 0.0;
         num currentBalance = snapshot['balance'] ?? 0.0;
-
         num newBalance = currentBalance + transactionSum;
 
         transaction.update(userRef, {'balance': newBalance});
