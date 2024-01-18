@@ -35,7 +35,7 @@ class WalletSummaryCard extends StatelessWidget {
                   style: GoogleFonts.openSans(
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
-                    fontSize: 34,
+                    fontSize: 32,
                   ));
             }),
           ),

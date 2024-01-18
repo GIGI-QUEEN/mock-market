@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:stock_market/models/stock.dart';
 import 'package:stock_market/views/stock_historical/candlestick_chart.dart';
-import 'package:stock_market/views/stock_historical/cartesian_chart.dart';
+import 'package:stock_market/views/stock_historical/line_chart.dart';
 import 'package:stock_market/views/stock_historical/historical.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -27,9 +27,26 @@ class HistoricalChart extends StatelessWidget {
             stock: stock,
             trackballBehavior: trackballBehavior,
             chartData: chartData)
-        : CartesianChart(
+        : LineChart(
             stock: stock,
-            trackballBehavior: trackballBehavior,
-            chartData: chartData);
+            trackballBehavior: TrackballBehavior(
+              enable: true,
+              activationMode: ActivationMode.singleTap,
+              tooltipSettings: const InteractiveTooltip(
+                  format: 'point.y',
+                  color: Color.fromARGB(85, 155, 152, 152),
+                  textStyle: TextStyle(
+                    color: Colors.black,
+                  )),
+              lineType: TrackballLineType.none,
+              tooltipDisplayMode: TrackballDisplayMode.groupAllPoints,
+            ),
+            chartData: chartData,
+            crosshairBehavior: CrosshairBehavior(
+              activationMode: ActivationMode.singleTap,
+              enable: true,
+              lineType: CrosshairLineType.both,
+            ),
+          );
   }
 }

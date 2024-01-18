@@ -12,7 +12,7 @@ class SingleStockDataProvider extends ChangeNotifier {
   final ChartsService _chartsService = ChartsService();
   final Stock stock;
   bool _showCandlestickChart = false;
-  bool get showCanglestickChart => _showCandlestickChart;
+  bool get showCandlestickChart => _showCandlestickChart;
   TrackballBehavior? get trackballBehavior => _trackballBehavior;
   List<ChartSampleData> get chartData => _chartData;
 

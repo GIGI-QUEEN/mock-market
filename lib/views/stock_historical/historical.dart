@@ -87,7 +87,7 @@ class StockHistoricalView extends StatelessWidget {
                   model.chartData.isEmpty
                       ? const CenteredCircularProgressIndicator()
                       : HistoricalChart(
-                          showCandlestickChart: model.showCanglestickChart,
+                          showCandlestickChart: model.showCandlestickChart,
                           stock: model.stock,
                           trackballBehavior: model.trackballBehavior ??
                               TrackballBehavior(enable: false),

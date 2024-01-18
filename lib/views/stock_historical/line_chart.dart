@@ -1,23 +1,21 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:stock_market/models/stock.dart';
-import 'package:stock_market/providers/single_stock_data_provider.dart';
 import 'package:stock_market/views/stock_historical/historical.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-class CartesianChart extends StatelessWidget {
-  const CartesianChart({
+class LineChart extends StatelessWidget {
+  const LineChart({
     super.key,
     required this.stock,
     required this.trackballBehavior,
     required this.chartData,
+    required this.crosshairBehavior,
   });
 
   final Stock stock;
   final TrackballBehavior trackballBehavior;
   final List<ChartSampleData> chartData;
+  final CrosshairBehavior crosshairBehavior;
 
   @override
   Widget build(BuildContext context) {
@@ -38,11 +36,11 @@ class CartesianChart extends StatelessWidget {
       ],
       primaryXAxis: const DateTimeAxis(
         isVisible: false,
-        majorGridLines: MajorGridLines(width: 0),
       ),
       primaryYAxis: const NumericAxis(
         isVisible: false,
       ),
+      crosshairBehavior: crosshairBehavior,
     );
   }
 }

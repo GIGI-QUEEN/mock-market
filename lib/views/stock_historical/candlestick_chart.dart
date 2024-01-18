@@ -33,8 +33,6 @@ class CandleStickChart extends StatelessWidget {
       ],
       primaryXAxis: const DateTimeAxis(
         isVisible: false,
-        majorGridLines: MajorGridLines(color: Colors.transparent),
-        minorGridLines: MinorGridLines(color: Colors.transparent),
       ),
       primaryYAxis: const NumericAxis(
         isVisible: false,
