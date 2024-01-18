@@ -6,7 +6,7 @@ import 'package:stock_market/components/stock_logo.dart';
 import 'package:stock_market/models/stock.dart';
 import 'package:stock_market/providers/stock_data_provider.dart';
 import 'package:stock_market/utils/utils.dart';
-import 'package:stock_market/views/historical.dart';
+import 'package:stock_market/views/stock_historical/historical.dart';
 
 class StockListView extends StatelessWidget {
   const StockListView({
@@ -88,10 +88,18 @@ class StockTile extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
+              builder: (context) => StockHistoricalView(
+                stock: stock,
+              ),
+            ),
+          );
+          /*  Navigator.push(
+            context,
+            MaterialPageRoute(
               builder: (context) =>
                   StockHistoricalView(stockSymbol: stock.symbol),
             ),
-          );
+          ); */
         },
         leading: StockLogo(
           stockSymbol: stock.symbol,

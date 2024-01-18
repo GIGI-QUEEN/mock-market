@@ -7,7 +7,7 @@ import 'package:stock_market/components/stock_logo.dart';
 import 'package:stock_market/models/stock.dart';
 import 'package:stock_market/services/charts.dart';
 import 'package:stock_market/utils/utils.dart';
-import 'package:stock_market/views/historical.dart';
+import 'package:stock_market/views/stock_historical/historical.dart';
 
 class StockCard extends StatelessWidget {
   StockCard({
@@ -17,6 +17,14 @@ class StockCard extends StatelessWidget {
 
   final Stock stock;
   late Future<List<ChartSampleData>> _chartData;
+
+  final ChartsService _chartsService = ChartsService();
+
+  Future<List<ChartSampleData>> fetchGraphData(
+      String stockSymbol, String duration) async {
+    _chartData = _chartsService.getChartData(stockSymbol, duration);
+    return _chartData;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,12 +89,6 @@ class StockCard extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  Future<List<ChartSampleData>> fetchGraphData(
-      String stockSymbol, String duration) async {
-    _chartData = getChartData(stockSymbol, duration);
-    return _chartData;
   }
 }
 

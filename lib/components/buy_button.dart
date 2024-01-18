@@ -5,34 +5,27 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
+import 'package:stock_market/models/stock.dart';
 import 'package:stock_market/providers/stock_data_provider.dart';
 import 'package:stock_market/services/database.dart';
 import 'package:stock_market/utils/utils.dart';
 import 'package:stock_market/components/numpad.dart';
 
-class BuyButton extends StatefulWidget {
-  final String stockSymbol;
-
-  const BuyButton({
+class BuyButton extends StatelessWidget {
+  BuyButton({
     Key? key,
-    required this.stockSymbol,
+    required this.stock,
   }) : super(key: key);
 
-  @override
-  State<BuyButton> createState() => _BuyButtonState();
-}
-
-class _BuyButtonState extends State<BuyButton> {
-  late int amount;
-
   final DatabaseService _databaseService = DatabaseService();
-
+  final Stock stock;
+  late int amount;
   @override
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User?>();
-    final stockDataProvider = context.watch<StockDataProviderV2>();
-    final stock = stockDataProvider.stocksMap[widget.stockSymbol];
-    final String company = getCompanyName(widget.stockSymbol);
+    // final stockDataProvider = context.watch<StockDataProviderV2>();
+    // final stock = stockDataProvider.stocksMap[widget.stockSymbol];
+    final String company = getCompanyName(stock.symbol);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 5.0),
@@ -75,6 +68,8 @@ class _BuyButtonState extends State<BuyButton> {
         ),
         child: Text(
           'Buy $company',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
@@ -88,7 +83,7 @@ class _BuyButtonState extends State<BuyButton> {
     QuickAlert.show(
         context: context,
         type: QuickAlertType.success,
-        text: 'Acquired $amount ${widget.stockSymbol}!',
+        text: 'Acquired $amount ${stock.symbol}!',
         autoCloseDuration: const Duration(seconds: 3),
         confirmBtnText: 'Go to Portfolio',
         onConfirmBtnTap: () async {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stock_market/views/historical.dart';
+import 'package:stock_market/views/stock_historical/historical.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class MiniGraph extends StatelessWidget {
@@ -29,15 +29,12 @@ class MiniGraph extends StatelessWidget {
             color: percentChange! < 0 ? Colors.red : const Color(0xFF22CC9E),
           ),
           AreaSeries<ChartSampleData, DateTime>(
-            gradient: LinearGradient(
-                colors: <Color>[
-                  percentChange! < 0
-                      ? const Color.fromARGB(1, 233, 210, 210)
-                      : const Color.fromARGB(6, 194, 236, 225),
-                  Colors.white
-                ],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter),
+            gradient: LinearGradient(colors: <Color>[
+              percentChange! < 0
+                  ? const Color.fromARGB(1, 233, 210, 210)
+                  : const Color.fromARGB(6, 194, 236, 225),
+              Colors.white
+            ], begin: Alignment.topCenter, end: Alignment.bottomCenter),
             animationDuration: 0,
             dataSource: chartData,
             xValueMapper: (ChartSampleData sales, _) => sales.x,

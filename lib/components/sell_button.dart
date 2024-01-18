@@ -5,34 +5,28 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
+import 'package:stock_market/models/stock.dart';
 import 'package:stock_market/providers/stock_data_provider.dart';
 import 'package:stock_market/services/database.dart';
 import 'package:stock_market/utils/utils.dart';
 import 'package:stock_market/components/numpad.dart';
 
-class SellButton extends StatefulWidget {
-  final String stockSymbol;
-
-  const SellButton({
+class SellButton extends StatelessWidget {
+  SellButton({
     Key? key,
-    required this.stockSymbol,
+    required this.stock,
   }) : super(key: key);
 
-  @override
-  State<SellButton> createState() => _SellButtonState();
-}
-
-class _SellButtonState extends State<SellButton> {
   late int amount;
-
+  final Stock stock;
   final DatabaseService _databaseService = DatabaseService();
 
   @override
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User?>();
-    final stockDataProvider = context.watch<StockDataProviderV2>();
-    final stock = stockDataProvider.stocksMap[widget.stockSymbol];
-    final String company = getCompanyName(widget.stockSymbol);
+/*     final stockDataProvider = context.watch<StockDataProviderV2>();
+    final stock = stockDataProvider.stocksMap[widget.stockSymbol]; */
+    final String company = getCompanyName(stock.symbol);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 5.0),
@@ -68,13 +62,15 @@ class _SellButtonState extends State<SellButton> {
             ),
           );
         },
-        color: const Color(0xFF22CC9E),
+        color: Color.fromARGB(255, 204, 34, 34),
         padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14.0),
         ),
         child: Text(
           'Sell $company',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
@@ -88,7 +84,7 @@ class _SellButtonState extends State<SellButton> {
     QuickAlert.show(
         context: context,
         type: QuickAlertType.success,
-        text: 'Sold $amount ${widget.stockSymbol}!',
+        text: 'Sold $amount ${stock.symbol}!',
         autoCloseDuration: const Duration(seconds: 3),
         confirmBtnText: 'Go to Portfolio',
         onConfirmBtnTap: () async {
