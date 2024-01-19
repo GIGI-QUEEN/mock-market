@@ -10,4 +10,13 @@ const stockList = [
   'V',
   'MA',
   'NFLX',
+  'XOM',
+  'JNJ',
+  'JPM',
+  'PG',
+  'AVGO',
+  'CVX',
+  'MRK',
+  'PEP',
+  'ADBE',
 ];

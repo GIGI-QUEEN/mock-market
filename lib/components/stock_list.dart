@@ -41,36 +41,6 @@ class StockListView extends StatelessWidget {
   }
 }
 
-/* class StockListView extends StatelessWidget {
-  const StockListView({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => StockDataProviderV2(),
-      child: Consumer<StockDataProviderV2>(builder: (context, model, _) {
-        final stocksMap = model.isLoading ? fakeStockMap : model.stocksMap;
-        final itemCount = stocksMap.length >= 2 ? 2 : 0;
-
-        return Skeletonizer(
-          enabled: model.isLoading,
-          child: ListView.separated(
-            itemCount: itemCount,
-            itemBuilder: (context, index) {
-              final stock = stocksMap.values.elementAt(index);
-              return StockTile(stock: stock);
-            },
-            separatorBuilder: (BuildContext context, int index) {
-              return const SizedBox(
-                height: 10,
-              );
-            },
-          ),
-        );
-      }),
-    );
-  }
-} */
-
 class StockTile extends StatelessWidget {
   const StockTile({super.key, required this.stock});
   final Stock stock;
@@ -93,13 +63,6 @@ class StockTile extends StatelessWidget {
               ),
             ),
           );
-          /*  Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  StockHistoricalView(stockSymbol: stock.symbol),
-            ),
-          ); */
         },
         leading: StockLogo(
           stockSymbol: stock.symbol,
@@ -108,15 +71,15 @@ class StockTile extends StatelessWidget {
         ),
         title: Text(
           getCompanyName(stock.symbol),
-          style: TextStyle(color: Color.fromARGB(255, 88, 88, 88)),
+          style: const TextStyle(color: Color.fromARGB(255, 88, 88, 88)),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               '\$${formatNumber(stock.price)}',
-              style:
-                  TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
+              style: const TextStyle(
+                  color: Colors.black, fontWeight: FontWeight.w600),
             ),
           ],
         ),

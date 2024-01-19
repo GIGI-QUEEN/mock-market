@@ -32,7 +32,7 @@ class StockLogo extends StatelessWidget {
         decoration: BoxDecoration(
             image: DecorationImage(
           image: AssetImage(
-            'assets/logos2/${stockSymbol.toLowerCase()}.png',
+            'assets/logos/${stockSymbol.toLowerCase()}.png',
           ),
         )),
       ),

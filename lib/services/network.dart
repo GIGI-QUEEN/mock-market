@@ -4,12 +4,14 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 final String? token = dotenv.env['FINNHUB_TOKEN'];
+final String? token2 = dotenv.env[
+    'FINNHUB_TOKEN_2']; //second token is needed because finnub only allows one ws connection at time
 final String apiKey = dotenv.env['IEX_API_KEY'] ?? '';
 
 class NetworkService {
   Future<List<Map<String, dynamic>>?> fetchHistoricalStockData(
       String stock, String range) async {
-    log('in fetchHistoricalStockData, range: $range');
+    //log('in fetchHistoricalStockData, range: $range');
 
     try {
       var url = Uri.parse(

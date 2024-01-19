@@ -20,7 +20,8 @@ class AccountProvider extends ChangeNotifier {
   bool _isDisposed = false;
   bool _isLoading = false;
   bool get isLoading => _isLoading;
-
+  num _totalStocksValue = 0;
+  num get totalStocksValue => _totalStocksValue;
   void listenToAccountChanges() {
     if (_auth.currentUser != null) {
       _databaseService
@@ -62,6 +63,7 @@ class AccountProvider extends ChangeNotifier {
         totalValue: currentPrice * qty,
         percentChange: percentChange,
       );
+      _totalStocksValue += currentPrice * qty;
       userStocksMap.update(userStock.symbol, (value) => userStock,
           ifAbsent: () => userStock);
       //log('user stock: $userStock');

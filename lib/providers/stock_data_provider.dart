@@ -8,7 +8,7 @@ import 'package:stock_market/constants/stock_list.dart';
 import 'package:stock_market/models/stock.dart';
 import 'package:stock_market/services/network.dart';
 
-class StockDataProviderV2 extends ChangeNotifier {
+class StockDataProviderV2 extends ChangeNotifier with WidgetsBindingObserver {
   final Map<String, Stock> _stocksMap = {};
   Map<String, Stock> get stocksMap => _stocksMap;
   final NetworkService _networkService = NetworkService();
@@ -69,17 +69,31 @@ class StockDataProviderV2 extends ChangeNotifier {
     });
   }
 
+  void activateObserver() {
+    WidgetsBinding.instance.addObserver(this);
+
+    notifyListeners();
+  }
+
   StockDataProviderV2() {
+    activateObserver();
     _initialFetch();
     Future.delayed(const Duration(milliseconds: 300), getRealTimeStockData());
+  }
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    log('AppLifecycleState: $state');
+    notifyListeners();
   }
 
   @override
   void dispose() {
+    log('disposed');
     _isDisposed = true;
     _isLoading = false;
     super.dispose();
     _streamSubscription.cancel();
     channel.sink.close();
+    WidgetsBinding.instance.removeObserver(this);
   }
 }

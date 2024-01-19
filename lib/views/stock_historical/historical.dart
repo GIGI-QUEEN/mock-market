@@ -67,7 +67,7 @@ class StockHistoricalView extends StatelessWidget {
                                 color: Color.fromARGB(255, 112, 112, 112)),
                           ),
                           Text(
-                            "\$${formatNumber(stock.price)}",
+                            "\$${formatNumber(model.stock.price)}",
                             style: GoogleFonts.openSans(
                                 fontWeight: FontWeight.bold, fontSize: 22),
                           ),
