@@ -10,23 +10,25 @@ Full project description: https://github.com/01-edu/public/tree/master/subjects/
 
 Audit questions: https://github.com/01-edu/public/tree/master/subjects/mobile-dev/stock-market/audit
 
-Audit question not shown in the video thus we're answering here: 
+Audit question not shown in the video thus we're answering here:
 
 - Ask the student which were the stocks they chose to monitor and display their data:
-We chose 20 stocks, if you're intensely interested which ones in particular, you can find the full list in `lib/constants/stock_list.dart`.
-
+  We chose 20 stocks, if you're intensely interested which ones in particular, you can find the full list in `lib/constants/stock_list.dart`.
 
 # Technologies
+
 **Backend**:
-- Real time database: [FireBase](https://firebase.google.com/)
+
+- Firestore: [Firebase](https://firebase.google.com/)
 - API with real-time data: - https://finnhub.io
 - API with historical data: - https://iexcloud.io
 
-
 **Frontend**:
+
 - State management with Provider pattern: - https://docs.flutter.dev/data-and-backend/state-mgmt/simple
 
 # True Nerd Quest: Run Project Locally
+
 - Proceed to the official [Flutter documentation](https://docs.flutter.dev/get-started/install), be ready to get your socks knocked off!
 - Clone this repo to your machine.
 - Run `flutter pub get`
@@ -35,6 +37,7 @@ We chose 20 stocks, if you're intensely interested which ones in particular, you
 
 ## Attributions
 
-[IEX Cloud](https://iexcloud.io), 
+[IEX Cloud](https://iexcloud.io),
 [FinnHub](https://finnhub.io),
-[Dribbble](https://dribbble.com/shots/16777094-Stock-Market-Mobile-App)
+Project design inspiration [Dribbble](https://dribbble.com/shots/16777094-Stock-Market-Mobile-App)
+Stock icons [icons8](https://icons8.com/)
