@@ -47,6 +47,8 @@ This app has no commercial use! Authors are not getting any revenue from this pr
 
 ## Screenshots
 
+<div style="display:flex">
 <img src="./screenshots/home_page.png" style="width:250px;height:auto;">
 <img src="./screenshots/portfolio.png" style="width:250px;height:auto;">
 <img src="./screenshots/markets.png" style="width:250px;height:auto;">
+</div>
