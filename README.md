@@ -7,6 +7,7 @@ A live-data stock-market app with real-time connections to APIs using a websocke
 - Each new user has a starting balance of $1,000,000 (fake dollars)
 - Track prices for 20 stocks in real time
 - See historical data for a single stock
+- Buy/sell/hold stocks
 
 # Technologies
 
@@ -44,4 +45,8 @@ Stock icons [icons8](https://icons8.com/)
 
 This app has no commercial use! Authors are not getting any revenue from this project!
 
-![Screenshot_1705687849](https://github.com/GIGI-QUEEN/mock-market/assets/104570550/faf4ebfa-ec02-4b39-8b4d-8f0db4059a09)
+## Screenshots
+
+<img src="./screenshots/home_page.png" style="width:250px;height:auto;">
+<img src="./screenshots/portfolio.png" style="width:250px;height:auto;">
+<img src="./screenshots/markets.png" style="width:250px;height:auto;">
